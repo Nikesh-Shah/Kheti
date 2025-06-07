@@ -79,3 +79,13 @@ export const getProductsByCategory = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+export const getProductsByFarmer = async (req, res) => {
+    try {
+        // req.user.userId is set by your auth middleware
+        const products = await Product.find({ farmer: req.user.userId });
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

@@ -51,3 +51,33 @@ export const login = async (req, res) => {
   }
 };
 
+// Update user
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Only allow certain fields to be updated
+    const { firstName, lastName, email, phoneNumber } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { firstName, lastName, email, phoneNumber },
+      { new: true }
+    );
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'User updated successfully', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Delete user
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+

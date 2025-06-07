@@ -5,16 +5,17 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProductsByCategory
+  getProductsByCategory,
+  getProductsByFarmer
 } from '../controllers/productController.js';
 import { authenticate, authorizeRoles } from '../middleware/authMiddleware.js';
-
 const router = express.Router();
 
 // Public routes
 router.get('/', getProducts);
 router.get('/:id', getProductById);
 router.get('/category/:category', getProductsByCategory);
+router.get('/farmer', authenticate, getProductsByFarmer);
 
 // Protected routes (only for 'farmer' or 'seller')
 router.post('/', authenticate, authorizeRoles('farmer', 'seller'), addProduct);
