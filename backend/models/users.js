@@ -16,16 +16,37 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase: true,
         unique: true,
-        trim: true
+        trim: true,
+        validate: {
+            validator: function(v) {
+                // Simple email regex
+                return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email!`
+        }
     },
     password:{
         type: String,
         required: true,
-        select: false
+        select: false,
+        minlength: [6, 'Password must be at least 6 characters'],
+        validate: {
+            validator: function(v) {
+                // At least one letter and one number
+                return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(v);
+            },
+            message: 'Password must be at least 6 characters and contain at least one letter and one number'
+        }
     },
-    phoneNumber:{
+    phoneNumber: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^\d{10}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid 10-digit phone number!`
+        }
     },
     role:{
         type: String,
@@ -47,4 +68,3 @@ userSchema.pre('save', async function(next) {
 const User = mongoose.model('User', userSchema);
 export default User;
 
-   

@@ -47,12 +47,23 @@ export const getAllOrders = async (req, res) => {
 // Farmer: Get orders for their products
 export const getFarmerOrders = async (req, res) => {
     try {
-        // Find orders where at least one product belongs to this farmer
-        const orders = await Order.find({ 'products.product': req.user.userId })
+        // Populate products.product to access farmer field
+        const orders = await Order.find()
+            .populate({
+                path: 'products.product',
+                select: 'farmer title'
+            })
             .populate('buyer', 'firstName lastName email')
-            .populate('products.product')
             .sort({ orderedAt: -1 });
-        res.json(orders);
+
+        // Filter orders where at least one product belongs to this farmer
+        const farmerOrders = orders.filter(order =>
+            order.products.some(p =>
+                p.product && p.product.farmer && p.product.farmer.toString() === req.user.userId
+            )
+        );
+
+        res.json(farmerOrders);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

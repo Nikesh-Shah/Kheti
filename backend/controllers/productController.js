@@ -70,7 +70,6 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
-// Get products by category
 export const getProductsByCategory = async (req, res) => {
     try {
         const { category } = req.params;
