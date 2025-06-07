@@ -1,4 +1,5 @@
 import Category from '../models/Category.js';
+import Product from '../models/Product.js'; // <-- Import Product model
 
 // Add category
 export const addCategory = async (req, res) => {
@@ -42,6 +43,27 @@ export const getCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get top selling products by category
+export const getTopSellingByCategory = async (req, res) => {
+  try {
+    // Get all categories
+    const categories = await Category.find();
+    const result = {};
+
+    // For each category, get top N selling products (e.g., top 1)
+    for (const category of categories) {
+      const topProducts = await Product.find({ category: category._id })
+        .sort({ sales: -1 }) // Assumes 'sales' field exists
+        .limit(1); // Change to 3 for top 3, etc.
+      result[category.name] = topProducts;
+    }
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
