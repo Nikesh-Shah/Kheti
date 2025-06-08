@@ -89,6 +89,19 @@ export default function Navbar() {
               <span className="cart-badge">3</span>
             </Link>
           )}
+          {/* Show Login/Register for guests */}
+          {!isLoggedIn && (
+            <>
+              <Link to="/auth" className="nav-link">
+                <LuUser className="nav-icon" />
+                <span>Login</span>
+              </Link>
+              <Link to="/register" className="nav-link">
+                <LuUserRound className="nav-icon" />
+                <span>Register</span>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* User Menu */}
@@ -143,6 +156,19 @@ export default function Navbar() {
               <span>Cart</span>
               <span className="mobile-cart-badge">3</span>
             </Link>
+          )}
+          {/* Show Login/Register for guests in mobile menu */}
+          {!isLoggedIn && (
+            <>
+              <Link to="/auth" className="mobile-nav-link">
+                <LuUser className="mobile-nav-icon" />
+                <span>Login</span>
+              </Link>
+              <Link to="/register" className="mobile-nav-link">
+                <LuUserRound className="mobile-nav-icon" />
+                <span>Register</span>
+              </Link>
+            </>
           )}
           {isLoggedIn && (
             <>

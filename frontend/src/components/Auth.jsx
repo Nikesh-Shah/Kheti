@@ -14,7 +14,8 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
-    phone: ""
+    phone: "",
+    role: "user", // <-- Add default role
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -34,8 +35,8 @@ export default function Auth() {
         const res = await loginUser({ email: form.email, password: form.password })
         localStorage.setItem("token", res.data.token)
         const role = res.data.user?.role
-        if (role === "admin") window.location.href = "/admin"
-        else if (role === "seller" || role === "farmer") window.location.href = "/farmer"
+        if (role === "admin") window.location.href = "/admin/dashboard"
+        else if (role === "seller" || role === "farmer") window.location.href = "/farmer/dashboard"
         else window.location.href = "/"
       } else {
         // REGISTER
@@ -50,11 +51,11 @@ export default function Auth() {
           email: form.email,
           password: form.password,
           phoneNumber: form.phone,
-          role: "user"
+          role: form.role, // <-- Use selected role
         })
         alert("Registration successful! Please login.")
         setIsLogin(true)
-        setForm({ name: "", email: "", password: "", confirmPassword: "", phone: "" })
+        setForm({ name: "", email: "", password: "", confirmPassword: "", phone: "", role: "user" })
       }
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong")
@@ -142,6 +143,28 @@ export default function Auth() {
                       onChange={handleChange}
                       required
                     />
+                  </div>
+                </div>
+              )}
+
+              {/* --- Role Selection Dropdown --- */}
+              {!isLogin && (
+                <div className="form-group">
+                  <label htmlFor="role" className="form-label">
+                    Register as
+                  </label>
+                  <div className="input-container">
+                    <select
+                      id="role"
+                      name="role"
+                      className="form-input"
+                      value={form.role}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="user">User</option>
+                      <option value="seller">Farmer</option>
+                    </select>
                   </div>
                 </div>
               )}

@@ -94,7 +94,7 @@ export default function Sidebar({ role, userName = "John Doe" }) {
               <li key={link.to} className="nav-item">
                 <Link
                   to={link.to}
-                  className={`nav-link ${location.pathname === link.to ? "active" : ""}`}
+                  className={`nav-linksidebar ${location.pathname === link.to ? "active" : ""}`}
                   onClick={closeMobile}
                 >
                   <span className="nav-icon">{link.icon}</span>
