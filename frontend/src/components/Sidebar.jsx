@@ -3,33 +3,23 @@
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import {
-  LuHouse, // Use LuHouse instead of LuHome
-  LuPackage,
-  LuClipboardList,
-  LuUsers,
-  LuLayers,
-  LuSprout,
-  LuMenu,
-  LuX,
-  LuChevronLeft,
-  LuChevronRight,
-  LuUser,
-  LuShield,
-
+  LuHouse, LuPackage, LuClipboardList, LuUsers, LuLayers, LuSprout,
+  LuMenu, LuX, LuChevronLeft, LuChevronRight, LuUser, LuShield
 } from "react-icons/lu"
-import "../Styles/Sidebar.css" // Ensure you have the correct path to your CSS file
+import "../Styles/Sidebar.css"
 
-export default function Sidebar({ role, userName = "John Doe" }) {
+export default function Sidebar({ role, userName }) {
   const location = useLocation()
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  // Define sidebar links for each role
+  // Sidebar links by role
   const links =
     role === "admin"
       ? [
           { to: "/admin", icon: <LuHouse />, label: "Dashboard" },
+          { to: "/admin/manage-orders", icon: <LuClipboardList />, label: "Manage Orders" },
           { to: "/admin/manage-products", icon: <LuPackage />, label: "Manage Products" },
           { to: "/admin/manage-users", icon: <LuUsers />, label: "Manage Users" },
           { to: "/admin/manage-categories", icon: <LuLayers />, label: "Manage Categories" },
@@ -40,19 +30,10 @@ export default function Sidebar({ role, userName = "John Doe" }) {
           { to: "/farmer/manage-orders", icon: <LuClipboardList />, label: "My Orders" },
         ]
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+  const toggleCollapse = () => setIsCollapsed(!isCollapsed)
+  const toggleMobile = () => setIsMobileOpen(!isMobileOpen)
+  const closeMobile = () => setIsMobileOpen(false)
 
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen)
-  }
-
-  const closeMobile = () => {
-    setIsMobileOpen(false)
-  }
-
-  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("user")
@@ -74,9 +55,7 @@ export default function Sidebar({ role, userName = "John Doe" }) {
         {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <div className="logo-icon">
-              <LuSprout />
-            </div>
+            <div className="logo-icon"><LuSprout /></div>
             {!isCollapsed && <span className="logo-text">AgriConnect</span>}
           </div>
           <button className="collapse-btn desktop-only" onClick={toggleCollapse}>
@@ -87,7 +66,7 @@ export default function Sidebar({ role, userName = "John Doe" }) {
         {/* User Info */}
         <div className="sidebar-user">
           <div className="user-avatar">{role === "admin" ? <LuShield /> : <LuUser />}</div>
-          {!isCollapsed && (
+          {!isCollapsed && userName && (
             <div className="user-info">
               <span className="user-name">{userName}</span>
               <span className="user-role">{role === "admin" ? "Administrator" : "Farmer"}</span>

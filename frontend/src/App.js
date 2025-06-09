@@ -8,6 +8,7 @@ import FarmerDashboardPage from './pages/FarmerDashboardpage';
 import ManageCategory from "./components/ManageCategoryAdmin";
 import ManageProducts from "./components/ManageProductAdmin";
 import ManageUsers from "./components/ManageUsersAdmin";
+import ManageOrdersAdmin from './components/ManageOrdersAdmin';
 import FarmerDashboard from './components/Farmer/FarmerDashboard';
 import FarmerProducts from './components/Farmer/ManageProductFarmer';
 import FarmerOrders from './components/Farmer/ManageOrderFarmer';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-categories" element={<ManageCategory />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/manage-orders" element={<ManageOrdersAdmin />} />
 
         {/* Farmer routes */}
         <Route path="/farmer/dashboard" element={<FarmerDashboardPage />} />
