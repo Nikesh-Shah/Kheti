@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import {
   LuHouse, // Use LuHouse instead of LuHome
   LuPackage,
@@ -21,6 +21,7 @@ import "../Styles/Sidebar.css" // Ensure you have the correct path to your CSS f
 
 export default function Sidebar({ role, userName = "John Doe" }) {
   const location = useLocation()
+  const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
@@ -49,6 +50,13 @@ export default function Sidebar({ role, userName = "John Doe" }) {
 
   const closeMobile = () => {
     setIsMobileOpen(false)
+  }
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    navigate("/auth")
   }
 
   return (
@@ -94,7 +102,7 @@ export default function Sidebar({ role, userName = "John Doe" }) {
               <li key={link.to} className="nav-item">
                 <Link
                   to={link.to}
-                  className={`nav-linksidebar ${location.pathname === link.to ? "active" : ""}`}
+                  className={`nav-link-sidebar ${location.pathname === link.to ? "active" : ""}`}
                   onClick={closeMobile}
                 >
                   <span className="nav-icon">{link.icon}</span>
@@ -102,6 +110,17 @@ export default function Sidebar({ role, userName = "John Doe" }) {
                 </Link>
               </li>
             ))}
+            {/* Logout Button */}
+            <li className="nav-item">
+              <button
+                className="nav-link-sidebar"
+                style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer" }}
+                onClick={handleLogout}
+              >
+                <span className="nav-icon"><LuX /></span>
+                {!isCollapsed && <span className="nav-label">Logout</span>}
+              </button>
+            </li>
           </ul>
         </nav>
 

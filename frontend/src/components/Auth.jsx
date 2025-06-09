@@ -15,7 +15,7 @@ export default function Auth() {
     password: "",
     confirmPassword: "",
     phone: "",
-    role: "user", // <-- Add default role
+    role: "user",
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -33,7 +33,10 @@ export default function Auth() {
       if (isLogin) {
         // LOGIN
         const res = await loginUser({ email: form.email, password: form.password })
+        console.log("Login API response:", res.data) // DEBUG
         localStorage.setItem("token", res.data.token)
+        localStorage.setItem("user", JSON.stringify(res.data.user))
+        console.log("User stored in localStorage:", localStorage.getItem("user")) // DEBUG
         const role = res.data.user?.role
         if (role === "admin") window.location.href = "/admin/dashboard"
         else if (role === "seller" || role === "farmer") window.location.href = "/farmer/dashboard"
@@ -45,22 +48,36 @@ export default function Auth() {
           setLoading(false)
           return
         }
-        await registerUser({
+        const res = await registerUser({
           firstName: form.name.split(" ")[0] || "",
           lastName: form.name.split(" ").slice(1).join(" ") || "",
           email: form.email,
           password: form.password,
           phoneNumber: form.phone,
-          role: form.role, // <-- Use selected role
+          role: form.role,
         })
+        console.log("Register API response:", res.data) // DEBUG
+        if (res.data.user) {
+          localStorage.setItem("user", JSON.stringify(res.data.user))
+          console.log("User stored in localStorage after register:", localStorage.getItem("user")) // DEBUG
+        }
         alert("Registration successful! Please login.")
         setIsLogin(true)
         setForm({ name: "", email: "", password: "", confirmPassword: "", phone: "", role: "user" })
       }
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong")
+      console.error("Auth error:", err) // DEBUG
     }
     setLoading(false)
+  }
+
+  // DEBUG: Show what's in localStorage for user
+  let debugUser = null
+  try {
+    debugUser = JSON.parse(localStorage.getItem("user"))
+  } catch {
+    debugUser = null
   }
 
   return (
@@ -297,6 +314,12 @@ export default function Auth() {
             <button className="footer-link">Terms of Service</button>
             <button className="footer-link">Support</button>
           </div>
+        </div>
+
+        {/* Debug info */}
+        <div style={{ background: "#f8f8f8", color: "#333", fontSize: 12, margin: 8, padding: 8 }}>
+          <b>DEBUG: localStorage user</b>
+          <pre>{JSON.stringify(debugUser, null, 2)}</pre>
         </div>
       </div>
     </div>

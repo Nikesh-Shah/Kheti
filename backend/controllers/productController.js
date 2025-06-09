@@ -82,10 +82,14 @@ export const getProductsByCategory = async (req, res) => {
 
 export const getProductsByFarmer = async (req, res) => {
     try {
-        // req.user.userId is set by your auth middleware
+        console.log("req.user in getProductsByFarmer:", req.user); // DEBUG
+        if (!req.user || !req.user.userId) {
+            return res.status(401).json({ error: "Unauthorized: user not found" });
+        }
         const products = await Product.find({ farmer: req.user.userId });
         res.json(products);
     } catch (err) {
+        console.error("Error in getProductsByFarmer:", err); // DEBUG
         res.status(500).json({ error: err.message });
     }
 };

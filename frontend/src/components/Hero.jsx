@@ -11,6 +11,7 @@ import {
   LuArrowRight,
   LuPlay,
 } from "react-icons/lu"
+import heroImg from "../pictures/hero1.jpg"
 
 export default function Hero() {
   return (
@@ -62,7 +63,7 @@ export default function Hero() {
           </div>
           <div className="hero-visual">
             <div className="hero-image">
-              <img src="/placeholder.svg?height=500&width=600" alt="Modern Agriculture" className="hero-img" />
+              <img src={heroImg} alt="Modern Agriculture" className="hero-img" />
               <div className="hero-features">
                 <div className="feature-card">
                   <LuSprout className="feature-icon" />

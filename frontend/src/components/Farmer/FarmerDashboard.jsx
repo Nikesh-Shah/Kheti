@@ -3,20 +3,13 @@
 import { useEffect, useState } from "react"
 import { getFarmerProducts, getFarmerOrders } from "../../api/api"
 import {
-  FaExclamationTriangle, // alert
-  FaBox,                // package
-  FaClipboardList,      // clipboard
-  FaChartLine,          // trending up
-  FaSmile,              // smile
-  FaRupeeSign,          // rupee
-  FaShoppingCart,       // shopping cart
-  FaChartBar,           // bar chart
-  FaCalendarAlt,        // calendar
-  FaSpinner,            // loader
+  FaExclamationTriangle, FaBox, FaClipboardList, FaChartLine, FaSmile,
+  FaRupeeSign, FaShoppingCart, FaChartBar, FaCalendarAlt, FaSpinner,
 } from "react-icons/fa"
 import Sidebar from "../Sidebar"
 import { Bar } from "react-chartjs-2"
 import { Chart, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend } from "chart.js"
+import "../../Styles/FarmerDashboard.css"
 
 Chart.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend)
 
@@ -25,6 +18,7 @@ export default function FarmerDashboard() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [farmerName, setFarmerName] = useState("Farmer")
+  const [debugUser, setDebugUser] = useState(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -40,10 +34,26 @@ export default function FarmerDashboard() {
         } catch {
           user = null
         }
-        setFarmerName(user?.firstName || "Farmer")
-      } catch {
+        setDebugUser(user) // DEBUG: Save user object for debug panel
+        // Show full name if available, fallback to firstName, name, email, or "Farmer"
+        setFarmerName(
+          user?.firstName && user?.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user?.firstName || user?.name || user?.email || "Farmer"
+        )
+        // DEBUG: Print to console
+        console.log("Fetched products:", prodRes.data)
+        console.log("Fetched orders:", orderRes.data)
+        console.log("User from localStorage:", user)
+        console.log("Farmer name resolved as:", 
+          user?.firstName && user?.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user?.firstName || user?.name || user?.email || "Farmer"
+        )
+      } catch (err) {
         setProducts([])
         setOrders([])
+        console.error("Error fetching dashboard data:", err)
       } finally {
         setLoading(false)
       }
@@ -55,10 +65,37 @@ export default function FarmerDashboard() {
   const totalProducts = products.length
   const totalOrders = orders.length
   const pendingOrders = orders.filter((o) => o.status === "pending").length
-  const earnings = orders.reduce((sum, o) => sum + (o.total || 0), 0)
+
+  // Products added this week
+  const startOfWeek = new Date()
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
+  const productsThisWeek = products.filter(p => p.createdAt && new Date(p.createdAt) >= startOfWeek).length
+
+  // Monthly earnings and last month earnings for dynamic percentage
+  const now = new Date()
+  const thisMonth = now.getMonth()
+  const thisYear = now.getFullYear()
+  const lastMonthDate = new Date(thisYear, thisMonth - 1, 1)
+  const lastMonth = lastMonthDate.getMonth()
+  const lastMonthYear = lastMonthDate.getFullYear()
+
   const monthlyEarnings = orders
-    .filter((o) => new Date(o.createdAt).getMonth() === new Date().getMonth())
+    .filter(o => {
+      const d = new Date(o.createdAt)
+      return d.getMonth() === thisMonth && d.getFullYear() === thisYear
+    })
     .reduce((sum, o) => sum + (o.total || 0), 0)
+
+  const lastMonthEarnings = orders
+    .filter(o => {
+      const d = new Date(o.createdAt)
+      return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear
+    })
+    .reduce((sum, o) => sum + (o.total || 0), 0)
+
+  const earningsChange = lastMonthEarnings
+    ? Math.round(((monthlyEarnings - lastMonthEarnings) / lastMonthEarnings) * 100)
+    : 0
 
   // Top-selling products (by order count)
   const productSales = {}
@@ -165,6 +202,14 @@ export default function FarmerDashboard() {
       <Sidebar role="farmer" userName={farmerName} />
       <main className="dashboard-main">
         <div className="dashboard-container">
+          {/* DEBUG PANEL */}
+          <div style={{ background: "#f8f8f8", color: "#333", fontSize: 12, margin: 8, padding: 8 }}>
+            <b>DEBUG: localStorage user</b>
+            <pre>{JSON.stringify(debugUser, null, 2)}</pre>
+            <b>DEBUG: Farmer Name</b>
+            <pre>{JSON.stringify(farmerName)}</pre>
+          </div>
+
           {/* Header */}
           <div className="dashboard-header">
             <div className="header-content">
@@ -199,7 +244,7 @@ export default function FarmerDashboard() {
                   <div className="stat-content">
                     <div className="stat-value">{totalProducts}</div>
                     <div className="stat-label">Products Listed</div>
-                    <div className="stat-change positive">+2 this week</div>
+                    <div className="stat-change positive">+{productsThisWeek} this week</div>
                   </div>
                 </div>
 
@@ -221,7 +266,10 @@ export default function FarmerDashboard() {
                   <div className="stat-content">
                     <div className="stat-value">{formatCurrency(monthlyEarnings)}</div>
                     <div className="stat-label">Monthly Earnings</div>
-                    <div className="stat-change positive">+15% from last month</div>
+                    <div className="stat-change positive">
+                      {earningsChange >= 0 ? "+" : ""}
+                      {earningsChange}% from last month
+                    </div>
                   </div>
                 </div>
 

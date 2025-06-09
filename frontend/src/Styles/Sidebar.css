@@ -205,7 +205,7 @@
   padding: 0 1rem;
 }
 
-.nav-linksidebar {
+.nav-link-sidebar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -219,7 +219,7 @@
   overflow: hidden;
 }
 
-.nav-linksidebar::before {
+.nav-link-sidebar::before {
   content: "";
   position: absolute;
   left: 0;
@@ -231,23 +231,23 @@
   transition: transform 0.3s ease;
 }
 
-.nav-linksidebar:hover {
+.nav-link-sidebar:hover {
   background-color: #f0f9f0;
   color: #008000;
   transform: translateX(4px);
 }
 
-.nav-linksidebar:hover::before {
+.nav-link-sidebar:hover::before {
   transform: scaleY(1);
 }
 
-.nav-linksidebarsidebar.active {
+.nav-link-sidebar.active {
   background-color: #008000;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 128, 0, 0.3);
 }
 
-.nav-linksidebarsidebar.active::before {
+.nav-link-sidebar.active::before {
   transform: scaleY(1);
   background-color: white;
 }
@@ -307,11 +307,11 @@
 }
 
 /* Tooltip for collapsed state */
-.sidebar.collapsed .nav-linksidebar {
+.sidebar.collapsed .nav-link-sidebar {
   position: relative;
 }
 
-.sidebar.collapsed .nav-linksidebar:hover::after {
+.sidebar.collapsed .nav-link-sidebar:hover::after {
   content: attr(data-tooltip);
   position: absolute;
   left: 100%;
@@ -433,7 +433,7 @@
 }
 
 /* Focus states for accessibility */
-.nav-linksidebar:focus,
+.nav-link-sidebar:focus,
 .collapse-btn:focus,
 .mobile-menu-btn:focus {
   outline: 2px solid #008000;
@@ -446,12 +446,12 @@
     border-right-width: 4px;
   }
 
-  .nav-linksidebar {
+  .nav-link-sidebar {
     border: 1px solid transparent;
   }
 
-  .nav-linksidebar:hover,
-  .nav-linksidebar.active {
+  .nav-link-sidebar:hover,
+  .nav-link-sidebar.active {
     border-color: #008000;
   }
 }
@@ -459,7 +459,7 @@
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
-  .nav-linksidebar,
+  .nav-link-sidebar,
   .collapse-btn,
   .mobile-menu-btn,
   .logo-text,
