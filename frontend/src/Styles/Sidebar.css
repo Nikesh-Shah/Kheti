@@ -353,36 +353,20 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .mobile-overlay {
-    display: block;
-  }
-
   .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    width: 0;
+    min-width: 0;
+    /* Hide sidebar by default on mobile */
   }
-
   .sidebar.mobile-open {
+    width: 280px !important;
+    min-width: 280px !important;
     transform: translateX(0);
+    z-index: 1002;
   }
-
   .sidebar.collapsed {
-    width: 280px;
-  }
-
-  .desktop-only {
-    display: none;
-  }
-
-  .sidebar.collapsed .logo-text,
-  .sidebar.collapsed .user-info,
-  .sidebar.collapsed .nav-label,
-  .sidebar.collapsed .footer-content {
-    opacity: 1;
+    width: 0 !important;
+    min-width: 0 !important;
   }
 }
 
