@@ -240,7 +240,7 @@ export default function ManageOrderFarmer() {
               <div className="mobile-orders">
                 {orders.map((order) => (
                   <div key={order._id} className="mobile-order-card">
-                    <div className="card-header">
+                    <div className="card-headerfarmer">
                       <div className="order-info">
                         <span className="mobile-order-id">#{order._id.slice(-8)}</span>
                         {getStatusBadge(order.status)}

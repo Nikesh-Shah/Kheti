@@ -221,7 +221,7 @@ export default function ManageProductFarmer() {
             </div>
             <form className="product-form" onSubmit={handleSubmit}>
               <div className="form-grid">
-                <div className="form-group">
+                <div className="form-groupfarmer">
                   <label htmlFor="title">
                     <FaBox className="input-icon" />
                     Product Name

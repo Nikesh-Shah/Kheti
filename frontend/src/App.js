@@ -12,6 +12,7 @@ import FarmerDashboard from './components/Farmer/FarmerDashboard';
 import FarmerProducts from './components/Farmer/ManageProductFarmer';
 import FarmerOrders from './components/Farmer/ManageOrderFarmer';
 import AdminDashboard from "./components/AdminDashboard";
+import ProductDetailPage from './pages/ProductDetailPage';
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/product" element={<Productpage />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+
+      
 
         {/* Admin routes */}
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
