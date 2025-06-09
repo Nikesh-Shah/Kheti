@@ -17,7 +17,7 @@ import {
   FaBox,
 } from "react-icons/fa"
 import Sidebar from "../Sidebar"
-import "../../Styles/ManageOrder.css" // Ensure you have the correct path to your CSS file
+import "../../Styles/ManageOrderFarmer.css"
 
 export default function ManageOrderFarmer() {
   const [orders, setOrders] = useState([])

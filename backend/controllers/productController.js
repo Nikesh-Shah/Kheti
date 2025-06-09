@@ -1,10 +1,23 @@
 import Product from '../models/Product.js';
 
-// Add a new product
+// Add a new product (supports multiple images)
 export const addProduct = async (req, res) => {
     try {
-        // Attach the farmer (user) ID from the authenticated user
-        const product = new Product({ ...req.body, farmer: req.user.userId });
+        // Get all uploaded image paths (if any)
+        const images = req.files ? req.files.map(file => file.path) : [];
+        const { title, description, price, quantity, unit, category } = req.body;
+
+        const product = new Product({
+            title,
+            description,
+            price,
+            quantity,
+            unit,
+            category,
+            image: images,
+            farmer: req.user.userId
+        });
+
         await product.save();
         res.status(201).json(product);
     } catch (err) {
@@ -33,7 +46,7 @@ export const getProductById = async (req, res) => {
     }
 };
 
-// Update a product (only the owner can update)
+// Update a product (only the owner can update, supports new images)
 export const updateProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -44,7 +57,20 @@ export const updateProduct = async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
-        Object.assign(product, req.body);
+        // If new images are uploaded, replace the image array
+        if (req.files && req.files.length > 0) {
+            product.image = req.files.map(file => file.path);
+        }
+
+        // Update other fields
+        const { title, description, price, quantity, unit, category } = req.body;
+        if (title !== undefined) product.title = title;
+        if (description !== undefined) product.description = description;
+        if (price !== undefined) product.price = price;
+        if (quantity !== undefined) product.quantity = quantity;
+        if (unit !== undefined) product.unit = unit;
+        if (category !== undefined) product.category = category;
+
         await product.save();
         res.json(product);
     } catch (err) {
@@ -58,8 +84,11 @@ export const deleteProduct = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        // Check if the logged-in user is the owner
-        if (product.farmer.toString() !== req.user.userId) {
+        // Allow if user is owner or admin
+        if (
+            product.farmer.toString() !== req.user.userId &&
+            req.user.role !== "admin"
+        ) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
@@ -70,6 +99,7 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
+// Get products by category
 export const getProductsByCategory = async (req, res) => {
     try {
         const { category } = req.params;
@@ -80,16 +110,15 @@ export const getProductsByCategory = async (req, res) => {
     }
 };
 
+// Get products by farmer (owner)
 export const getProductsByFarmer = async (req, res) => {
     try {
-        console.log("req.user in getProductsByFarmer:", req.user); // DEBUG
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ error: "Unauthorized: user not found" });
         }
         const products = await Product.find({ farmer: req.user.userId });
         res.json(products);
     } catch (err) {
-        console.error("Error in getProductsByFarmer:", err); // DEBUG
         res.status(500).json({ error: err.message });
     }
 };

@@ -5,7 +5,13 @@ const productSchema = new mongoose.Schema({
     description: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 0 },
-    image: { type: String, trim: true },
+    unit: {
+        type: String,
+        enum: ['kg', 'piece'],
+        default: 'kg',
+        required: true
+    },
+    image: [{ type: String, trim: true }],
     category: {
         type: String,
         required: true,

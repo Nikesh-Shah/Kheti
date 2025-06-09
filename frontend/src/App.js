@@ -34,7 +34,6 @@ function App() {
         <Route path="/farmer/manage-orders" element={<FarmerOrders />} />
         <Route path="/farmer" element={<FarmerDashboard />} />
 
-        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </Router>

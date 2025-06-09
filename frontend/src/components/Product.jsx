@@ -18,6 +18,7 @@ import {
 } from "react-icons/lu"
 import { getProducts } from "../api/api"
 import "../Styles/Product.css"
+import { Link } from "react-router-dom"
 
 const categoryIcons = {
   Fertilizer: <LuDroplets className="category-icon" />,
@@ -168,53 +169,59 @@ export default function Product() {
             const categoryDisplay =
               product.category?.charAt(0).toUpperCase() + product.category?.slice(1).toLowerCase()
             return (
-              <div key={product._id} className="product-card">
-                <div className="product-image-container">
-                  <img
-                    src={product.image || "/placeholder.svg?height=200&width=200"}
-                    alt={name}
-                    className="product-img"
-                  />
-                  <button
-                    className={`favorite-btn ${favorites.has(product._id) ? "active" : ""}`}
-                    onClick={() => handleFavorite(product._id)}
-                    aria-label="Add to favorites"
-                  >
-                    <LuHeart className="heart-icon" />
-                  </button>
-                  <div className="product-category-badge">
-                    {categoryIcons[categoryDisplay] || <LuPackage className="category-icon" />}
-                    <span>{categoryDisplay}</span>
-                  </div>
-                </div>
-
-                <div className="product-content">
-                  <h4 className="product-name">{name}</h4>
-                  <p className="product-description">
-                    {product.description?.length > 80
-                      ? `${product.description.substring(0, 80)}...`
-                      : product.description || "High-quality agricultural product for better farming results."}
-                  </p>
-
-                  <div className="product-rating">
-                    {[...Array(5)].map((_, i) => (
-                      <LuStar key={i} className={`rating-star ${i < 4 ? "filled" : ""}`} />
-                    ))}
-                    <span className="rating-text">(4.5)</span>
-                  </div>
-
-                  <div className="product-footer">
-                    <div className="price-container">
-                      <span className="current-price">{formatPrice(product.price)}</span>
-                      <span className="original-price">{formatPrice(product.price * 1.15)}</span>
-                    </div>
-                    <button className="add-to-cart-btn">
-                      <LuShoppingCart className="cart-icon" />
-                      Add to Cart
+              <Link to={`/product/${product._id}`} className="product-card-link" key={product._id}>
+                <div className="product-card">
+                  <div className="product-image-container">
+                    <img
+                      src={
+                        Array.isArray(product.image) && product.image.length > 0
+                          ? (product.image[0].startsWith("http") ? product.image[0] : `/${product.image[0].replace(/\\/g, "/")}`)
+                          : "/placeholder.svg?height=200&width=200"
+                      }
+                      alt={name}
+                      className="product-img"
+                    />
+                    <button
+                      className={`favorite-btn ${favorites.has(product._id) ? "active" : ""}`}
+                      onClick={() => handleFavorite(product._id)}
+                      aria-label="Add to favorites"
+                    >
+                      <LuHeart className="heart-icon" />
                     </button>
+                    <div className="product-category-badge">
+                      {categoryIcons[categoryDisplay] || <LuPackage className="category-icon" />}
+                      <span>{categoryDisplay}</span>
+                    </div>
+                  </div>
+
+                  <div className="product-content">
+                    <h4 className="product-name">{name}</h4>
+                    <p className="product-description">
+                      {product.description?.length > 80
+                        ? `${product.description.substring(0, 80)}...`
+                        : product.description || "High-quality agricultural product for better farming results."}
+                    </p>
+
+                    <div className="product-rating">
+                      {[...Array(5)].map((_, i) => (
+                        <LuStar key={i} className={`rating-star ${i < 4 ? "filled" : ""}`} />
+                      ))}
+                      <span className="rating-text">(4.5)</span>
+                    </div>
+
+                    <div className="product-footer">
+                      <div className="price-container">
+                        <span className="current-price">{formatPrice(product.price)}</span>
+                        <span className="original-price">{formatPrice(product.price * 1.15)}</span>
+                      </div>
+                      <button className="add-to-cart-btn">
+                        <LuShoppingCart className="cart-icon" />
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>

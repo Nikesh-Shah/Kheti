@@ -65,12 +65,12 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         {/* Logo */}
-        <div className="navbar-logo">
+        <Link to="/" className="navbar-logo" style={{ textDecoration: "none" }}>
           <div className="logo-icon-container">
             <LuPackage className="logo-icon" />
           </div>
           <span className="logo-text">Kheti</span>
-        </div>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <div className="navbar-links">
