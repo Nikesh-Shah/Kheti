@@ -461,7 +461,7 @@
   font-size: 0.875rem;
 }
 
-.form-input,
+.form-inputadmin,
 .form-select {
   padding: 0.75rem 1rem;
   border: 1px solid #e5e7eb;
@@ -472,7 +472,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.form-input:focus,
+.form-inputadmin:focus,
 .form-select:focus {
   outline: none;
   border-color: #008000;
@@ -804,7 +804,7 @@
 
 .search-input:focus,
 .role-filter:focus,
-.form-input:focus,
+.form-inputadmin:focus,
 .form-select:focus {
   outline: 2px solid #008000;
   outline-offset: 2px;

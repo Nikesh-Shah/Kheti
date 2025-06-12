@@ -426,7 +426,7 @@ export default function ManageUsersAdmin() {
                       name="firstName"
                       value={form.firstName}
                       onChange={handleChange}
-                      className="form-input"
+                      className="form-inputadmin"
                       placeholder="Enter first name"
                       required
                     />
@@ -438,7 +438,7 @@ export default function ManageUsersAdmin() {
                       name="lastName"
                       value={form.lastName}
                       onChange={handleChange}
-                      className="form-input"
+                      className="form-inputadmin"
                       placeholder="Enter last name"
                       required
                     />
@@ -452,7 +452,7 @@ export default function ManageUsersAdmin() {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="form-input"
+                    className="form-inputadmin"
                     placeholder="Enter email address"
                     required
                   />
