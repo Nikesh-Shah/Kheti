@@ -14,7 +14,7 @@ import {
     FaShieldAlt,
 } from "react-icons/fa"
 import Sidebar from "./Sidebar"
-import "../Styles/AdminDashboard.css" // Ensure you have the correct path to your CSS file
+import "../Styles/AdminDashboard.css" 
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([])

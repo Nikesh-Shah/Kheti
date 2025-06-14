@@ -25,6 +25,7 @@ export default function ManageProductFarmer() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  
   const [form, setForm] = useState({
     title: "",
     price: "",
@@ -42,6 +43,7 @@ export default function ManageProductFarmer() {
   useEffect(() => {
     fetchProducts()
   }, [])
+ 
 
   async function fetchProducts() {
     setLoading(true)

@@ -13,15 +13,13 @@ const productSchema = new mongoose.Schema({
     },
     image: [{ type: String, trim: true }],
     category: {
-        type: String,
-        required: true,
-        enum: ['fruits', 'vegetables', 'grains', 'other'],
-        lowercase: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category', 
+        required: true
     },
     farmer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Farmer',
+        ref: 'User',
         required: true
     },
     createdAt: { type: Date, default: Date.now }

@@ -12,15 +12,14 @@ import { authenticate, authorizeRoles } from '../middleware/authMiddleware.js';
 import upload from '../middleware/upload.js';
 
 const router = express.Router();
+  
 
-// Public routes
 router.get('/', getProducts);
-router.get('/:id', getProductById);
 router.get('/category/:category', getProductsByCategory);
-router.get('/farmer', authenticate, getProductsByFarmer);
+router.get('/farmer', authenticate, getProductsByFarmer); // ✅ Must come before `/:id`
+router.get('/:id', getProductById); // ✅ Dynamic routes last
 
-// Protected routes (only for 'farmer' or 'seller')
-// For adding a product (multiple images)
+
 router.post(
   '/',
   authenticate,

@@ -24,6 +24,7 @@ export default function ManageOrderFarmer() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState("")
   const [updatingOrder, setUpdatingOrder] = useState(null)
+  
 
   useEffect(() => {
     fetchOrders()
@@ -81,7 +82,7 @@ export default function ManageOrderFarmer() {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar role="farmer" />
+      <Sidebar role="farmer"  />
       <main className="dashboard-main">
         <div className="orders-container">
           {/* Header */}

@@ -3,7 +3,6 @@ import Product from '../models/Product.js';
 // Add a new product (supports multiple images)
 export const addProduct = async (req, res) => {
     try {
-        // Get all uploaded image paths (if any)
         const images = req.files ? req.files.map(file => file.path) : [];
         const { title, description, price, quantity, unit, category } = req.body;
 

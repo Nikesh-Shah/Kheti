@@ -18,7 +18,6 @@ export default function FarmerDashboard() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [farmerName, setFarmerName] = useState("Farmer")
-  const [debugUser, setDebugUser] = useState(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -34,12 +33,11 @@ export default function FarmerDashboard() {
         } catch {
           user = null
         }
-        setDebugUser(user) // DEBUG: Save user object for debug panel
-        // Show full name if available, fallback to firstName, name, email, or "Farmer"
+        
         setFarmerName(
           user?.firstName && user?.lastName
             ? `${user.firstName} ${user.lastName}`
-            : user?.firstName || user?.name || user?.email || "Farmer"
+            : user?.firstName || user?.name || user?.email || "seller"
         )
         // DEBUG: Print to console
         console.log("Fetched products:", prodRes.data)
@@ -48,7 +46,7 @@ export default function FarmerDashboard() {
         console.log("Farmer name resolved as:", 
           user?.firstName && user?.lastName
             ? `${user.firstName} ${user.lastName}`
-            : user?.firstName || user?.name || user?.email || "Farmer"
+            : user?.firstName || user?.name || user?.email || "seller"
         )
       } catch (err) {
         setProducts([])
@@ -202,13 +200,7 @@ export default function FarmerDashboard() {
       <Sidebar role="farmer" userName={farmerName} />
       <main className="dashboard-main">
         <div className="dashboard-container">
-          {/* DEBUG PANEL */}
-          <div style={{ background: "#f8f8f8", color: "#333", fontSize: 12, margin: 8, padding: 8 }}>
-            <b>DEBUG: localStorage user</b>
-            <pre>{JSON.stringify(debugUser, null, 2)}</pre>
-            <b>DEBUG: Farmer Name</b>
-            <pre>{JSON.stringify(farmerName)}</pre>
-          </div>
+
 
           {/* Header */}
           <div className="dashboard-header">
