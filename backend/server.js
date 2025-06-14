@@ -9,6 +9,8 @@ import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
 import orderRoutes from './routes/orders.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,6 +22,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/cart', cartRoutes);
+
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))   
