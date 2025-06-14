@@ -26,6 +26,8 @@ Kheti is a full-stack MERN (MongoDB, Express.js, React, Node.js) web application
 
 ### 🧑‍🌾 Home page
 ![Home Page](screenshots/home.png)
+![Home Page](screenshots/home.png)
+
 
 ### 🧑‍🌾 Login
 
