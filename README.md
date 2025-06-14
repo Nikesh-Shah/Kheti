@@ -2,9 +2,6 @@
 
 Kheti is a full-stack MERN (MongoDB, Express.js, React, Node.js) web application that directly connects **farmers** and **consumers**. The goal is to empower local farmers to earn more by eliminating middlemen, while enabling consumers to access **fresh**, **real**, and **affordable** agricultural products.
 
-## 🔗 Live Demo
-
-🚀 Coming Soon
 
 ## 🧩 Features
 
@@ -28,26 +25,26 @@ Kheti is a full-stack MERN (MongoDB, Express.js, React, Node.js) web application
 ## 📸 Screenshots
 
 ### 🧑‍🌾 Home page
-![Home Page](./screenshots/home.png)
+![Home Page](screenshots/home.png)
 
 ### 🧑‍🌾 Login
 
-![Login Page](./screenshots/login.png)
+![Login Page](screenshots/login.png)
 
 ### 🧑‍🌾 Register
 
-![Register Page](./screenshots/register.png)
+![Register Page](screenshots/register.png)
 
 
 
 
 ### 🧑‍🌾 Farmer Dashboard
 
-![Farmer Dashboard](./screenshots/farmer.png)
+![Farmer Dashboard](screenshots/farmer.png)
 
 ### 🧑‍🌾 Admin Dashboard
 
-![Admin Dashboard](./screenshots/admin.png)
+![Admin Dashboard](screenshots/admin.png)
 
 
 
