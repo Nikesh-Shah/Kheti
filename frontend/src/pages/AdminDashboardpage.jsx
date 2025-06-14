@@ -5,7 +5,6 @@ import Sidebar from "../components/Sidebar";
 export default function AdminDashboardPage() {
   return (
     <div>
-        <Sidebar />
 
       <AdminDashboard />
     </div>

@@ -14,7 +14,6 @@ export default function Sidebar({ role, userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  // Sidebar links by role
   const links =
     role === "admin"
       ? [
@@ -56,7 +55,7 @@ export default function Sidebar({ role, userName }) {
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="logo-icon"><LuSprout /></div>
-            {!isCollapsed && <span className="logo-text">AgriConnect</span>}
+            {!isCollapsed && <span className="logo-text">Kheti</span>}
           </div>
           <button className="collapse-btn desktop-only" onClick={toggleCollapse}>
             {isCollapsed ? <LuChevronRight /> : <LuChevronLeft />}
@@ -107,7 +106,7 @@ export default function Sidebar({ role, userName }) {
         <div className="sidebar-footer">
           {!isCollapsed && (
             <div className="footer-content">
-              <p className="footer-text">AgriConnect Dashboard</p>
+              <p className="footer-text">Kheti Dashboard</p>
               <p className="footer-version">v2.0.1</p>
             </div>
           )}

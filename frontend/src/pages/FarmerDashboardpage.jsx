@@ -5,7 +5,6 @@ import "../Styles/FarmerDashboard.css"; // Assuming you have a CSS file for styl
 export default function FarmerDashboardPage() {
   return (
     <div>
-      <Sidebar />
       <FarmerDashboard />
     </div>
   );
