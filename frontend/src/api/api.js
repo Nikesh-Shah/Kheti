@@ -49,4 +49,12 @@ export const updateCategory = (id, data) => api.put(`/categories/${id}`, data);
 export const deleteCategory = (id) => api.delete(`/categories/${id}`);
 export const getTopSellingByCategory = () => api.get('/categories/top-selling-by-category');
 
+// --- Cart APIs ---
+export const getCartItems = () => api.get('/cart');
+export const addToCart = (data) => api.post('/cart/add', data);  
+export const updateCartItem = (productId, data) => api.put(`/cart/update/${productId}`, data); 
+export const removeFromCart = (productId) => api.delete(`/cart/remove/${productId}`);
+
+
+
 export default api;

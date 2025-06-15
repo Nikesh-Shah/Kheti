@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import {
-  LuHouse,         // <-- Use this instead of LuHome
+  LuHouse,         
   LuPackage,
   LuShoppingCart,
   LuUser,
