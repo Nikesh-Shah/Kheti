@@ -1,64 +1,50 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { getCartItems, updateCartItem, removeFromCart } from "../api/api"
+import { useState } from "react"
 import "../Styles/Cart.css"
+import { useCart } from '../context/CartContext';
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const {
+    cartItems,
+    loading,
+    error,
+    setError,
+    fetchCartItems,
+    updateItemQuantity,
+    removeItem,
+    clearCart
+  } = useCart();
+  
   const [showPayment, setShowPayment] = useState(false)
   const [selectedPayment, setSelectedPayment] = useState("")
   const [showSuccess, setShowSuccess] = useState(false)
   const [updating, setUpdating] = useState({})
-
-  useEffect(() => {
-    fetchCartItems()
-  }, [])
-
-  async function fetchCartItems() {
-    setLoading(true)
-    setError("")
-    try {
-      const res = await getCartItems()
-      setCartItems(res.data || [])
-    } catch (err) {
-      setError("Failed to fetch cart items.")
-    }
-    setLoading(false)
-  }
+  const [success, setSuccess] = useState("")
 
   async function handleUpdateQuantity(productId, newQuantity) {
     if (newQuantity < 1) return
 
     setUpdating((prev) => ({ ...prev, [productId]: true }))
-    setError("")
     try {
-      await updateCartItem(productId, { quantity: newQuantity })
-      setCartItems((prev) =>
-        prev.map((item) => (item.product._id === productId ? { ...item, quantity: newQuantity } : item)),
-      )
+      await updateItemQuantity(productId, newQuantity)
       setSuccess("Cart updated successfully!")
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
-      setError("Failed to update cart item.")
+      // Error handling is done in the context
     }
     setUpdating((prev) => ({ ...prev, [productId]: false }))
   }
 
   async function handleRemoveItem(productId) {
     if (!window.confirm("Are you sure you want to remove this item from cart?")) return
-
-    setError("")
+    
     try {
-      await removeFromCart(productId)
-      setCartItems((prev) => prev.filter((item) => item.product._id !== productId))
+      await removeItem(productId)
       setSuccess("Item removed from cart!")
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
-      setError("Failed to remove item from cart.")
+      // Error handling is done in the context
     }
   }
 
@@ -87,12 +73,10 @@ export default function Cart() {
     }
 
     // Simulate payment processing
-    setLoading(true)
     setTimeout(() => {
-      setLoading(false)
       setShowPayment(false)
       setShowSuccess(true)
-      setCartItems([]) // Clear cart after successful payment
+      clearCart() // Use context's clearCart instead of directly setting cartItems
     }, 2000)
   }
 
@@ -113,6 +97,14 @@ export default function Cart() {
     )
   }
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  
+  if (cartItems.length === 0) {
+    return <div>Your cart is empty</div>;
+  }
+  
   return (
     <div className="cart-container-cart">
       <div className="cart-header-cart">

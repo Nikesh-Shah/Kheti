@@ -14,13 +14,14 @@ import {
 } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
 import "../Styles/Navbar.css" 
-
+import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const dropdownRef = useRef(null)
   const navigate = useNavigate();
+  const { cartCount } = useCart();
 
   // Check login status
   const isLoggedIn = !!localStorage.getItem("token")
@@ -86,7 +87,9 @@ export default function Navbar() {
             <Link to="/cart" className="nav-link cart-link">
               <LuShoppingCart className="nav-icon" />
               <span>Cart</span>
-              <span className="cart-badge">3</span>
+              {cartCount > 0 && (
+                <span className="cart-badge">{cartCount}</span>
+              )}
             </Link>
           )}
           {/* Show Login/Register for guests */}

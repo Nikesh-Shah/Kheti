@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProductById } from "../api/api";
+import { useCart } from "../context/CartContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const { addItemToCart } = useCart();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -15,27 +18,23 @@ export default function ProductDetail() {
         const res = await getProductById(id);
         setProduct(res.data);
       } catch (err) {
-        setProduct(null);
+        console.error(err);
       }
       setLoading(false);
     }
     fetchProduct();
   }, [id]);
 
+  const handleAddToCart = () => {
+    addItemToCart(product._id, quantity);
+  };
+
   if (loading) {
-    return (
-      <div className="product-detail-loading">
-        <h2>Loading product...</h2>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (!product) {
-    return (
-      <div className="product-detail-error">
-        <h2>Product not found</h2>
-      </div>
-    );
+    return <div>Product not found</div>;
   }
 
   return (
@@ -84,7 +83,14 @@ export default function ProductDetail() {
           <div><strong>Quantity:</strong> {product.quantity} {product.unit}</div>
           <div><strong>Category:</strong> {product.category}</div>
         </div>
-        {/* Add to Cart / Buy Now buttons can go here */}
+        <div className="add-to-cart">
+          <div className="quantity-selector">
+            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+            <span>{quantity}</span>
+            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+          </div>
+          <button onClick={handleAddToCart}>Add to Cart</button>
+        </div>
       </div>
     </div>
   );

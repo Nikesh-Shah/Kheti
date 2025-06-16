@@ -19,6 +19,7 @@ import {
 import { getProducts } from "../api/api"
 import "../Styles/Product.css"
 import { Link } from "react-router-dom"
+import { useCart } from "../context/CartContext"
 
 const categoryIcons = {
   Fertilizer: <LuDroplets className="category-icon" />,
@@ -26,16 +27,18 @@ const categoryIcons = {
   Tools: <LuTractor className="category-icon" />,
   Grains: <LuWheat className="category-icon" />,
   Vegetables: <LuLeaf className="category-icon" />,
-  Package: <LuPackage className="category-icon" />,
+  Package: <LuBug className="category-icon" />,
   Pest: <LuBug className="category-icon" />,
 }
 
 export default function Product() {
+  const { addItemToCart } = useCart()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState(new Set())
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [addedToCartItems, setAddedToCartItems] = useState(new Set())
 
   useEffect(() => {
     async function fetchProducts() {
@@ -86,6 +89,22 @@ export default function Product() {
       product.category?.charAt(0).toUpperCase() + product.category?.slice(1).toLowerCase()
     ))).filter(Boolean)
   ]
+
+  const handleAddToCart = (e, productId) => {
+    e.preventDefault() // Prevent navigation to product detail
+    e.stopPropagation() // Stop event bubbling
+    addItemToCart(productId, 1) // Add 1 quantity of the product
+    
+    // Show "Added!" message temporarily
+    setAddedToCartItems(prev => new Set(prev).add(productId))
+    setTimeout(() => {
+      setAddedToCartItems(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(productId)
+        return newSet
+      })
+    }, 2000)
+  }
 
   if (loading) {
     return (
@@ -214,9 +233,12 @@ export default function Product() {
                         <span className="current-price">{formatPrice(product.price)}</span>
                         <span className="original-price">{formatPrice(product.price * 1.15)}</span>
                       </div>
-                      <button className="add-to-cart-btn">
+                      <button
+                        className="add-to-cart-btn"
+                        onClick={(e) => handleAddToCart(e, product._id)}
+                      >
                         <LuShoppingCart className="cart-icon" />
-                        Add to Cart
+                        {addedToCartItems.has(product._id) ? "Added!" : "Add to Cart"}
                       </button>
                     </div>
                   </div>

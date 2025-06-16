@@ -1,22 +1,20 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', 
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Add auth token to requests
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // --- Auth APIs ---
 export const registerUser = (data) => api.post('/auth/register', data);
@@ -51,9 +49,10 @@ export const getTopSellingByCategory = () => api.get('/categories/top-selling-by
 
 // --- Cart APIs ---
 export const getCartItems = () => api.get('/cart');
-export const addToCart = (data) => api.post('/cart/add', data);  
-export const updateCartItem = (productId, data) => api.put(`/cart/update/${productId}`, data); 
-export const removeFromCart = (productId) => api.delete(`/cart/remove/${productId}`);
+export const addToCart = (data) => api.post('/cart', data);
+export const updateCartItem = (productId, quantity) => api.put('/cart', { productId, quantity });
+export const removeFromCart = (productId) => api.delete('/cart/item', { data: { productId } });
+export const clearCart = () => api.delete('/cart');
 
 
 
