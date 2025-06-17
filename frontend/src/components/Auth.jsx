@@ -19,9 +19,15 @@ export default function Auth() {
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
+    if (e.target.name === 'remember') {
+      setRememberMe(value)
+    } else {
+      setForm({ ...form, [e.target.name]: value })
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -32,8 +38,18 @@ export default function Auth() {
     try {
       if (isLogin) {
         const res = await loginUser({ email: form.email, password: form.password })
-        localStorage.setItem("token", res.data.token)
-        localStorage.setItem("user", JSON.stringify(res.data.user))
+        
+        // Store token based on remember me setting
+        if (rememberMe) {
+          // Persist token in localStorage (survives browser restarts)
+          localStorage.setItem("token", res.data.token)
+          localStorage.setItem("user", JSON.stringify(res.data.user))
+        } else {
+          // Store in sessionStorage (cleared when browser is closed)
+          sessionStorage.setItem("token", res.data.token)
+          sessionStorage.setItem("user", JSON.stringify(res.data.user))
+        }
+
         const role = res.data.user?.role
         if (role === "admin") window.location.href = "/admin/dashboard"
         else if (role === "seller" || role === "farmer") window.location.href = "/farmer/dashboard"
@@ -63,6 +79,19 @@ export default function Auth() {
       setError(err.response?.data?.message || "Something went wrong")
     }
     setLoading(false)
+  }
+
+  // When checking if user is logged in
+  const isLoggedIn = () => {
+    return !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('user')
+    window.location.href = '/auth'
   }
 
   return (
@@ -220,7 +249,14 @@ export default function Auth() {
               {isLogin && (
                 <div className="form-options-auth">
                   <div className="remember-me-auth">
-                    <input type="checkbox" id="remember" className="checkbox-auth" />
+                    <input 
+                      type="checkbox" 
+                      id="remember" 
+                      name="remember"
+                      className="checkbox-auth" 
+                      checked={rememberMe}
+                      onChange={handleChange}
+                    />
                     <label htmlFor="remember" className="checkbox-label-auth">Remember me</label>
                   </div>
                   <button type="button" className="forgot-password-auth">Forgot password?</button>
@@ -288,3 +324,4 @@ export default function Auth() {
     </div>
   )
 }
+
