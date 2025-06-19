@@ -3,15 +3,27 @@ import Order from '../models/Order.js';
 // Place a new order (Buyer)
 export const placeOrder = async (req, res) => {
     try {
-        const { products, totalAmount } = req.body;
+        const { products, totalAmount, paymentMethod } = req.body;
         const buyer = req.user.userId;
 
-        const order = new Order({
+        // Validate products array
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ error: 'No products in order.' });
+        }
+        if (!totalAmount || totalAmount < 0) {
+            return res.status(400).json({ error: 'Invalid total amount.' });
+        }
+
+        const orderData = {
             buyer,
             products,
             totalAmount
-        });
+        };
 
+        // If you added paymentMethod to your model, include it
+        if (paymentMethod) orderData.paymentMethod = paymentMethod;
+
+        const order = new Order(orderData);
         await order.save();
         res.status(201).json({ message: 'Order placed successfully', order });
     } catch (err) {
@@ -47,7 +59,6 @@ export const getAllOrders = async (req, res) => {
 // Farmer: Get orders for their products
 export const getFarmerOrders = async (req, res) => {
     try {
-        // Populate products.product to access farmer field
         const orders = await Order.find()
             .populate({
                 path: 'products.product',

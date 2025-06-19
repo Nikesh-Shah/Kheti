@@ -1,4 +1,3 @@
-
 import mongoose, { Schema } from 'mongoose';
 
 const orderSchema = new Schema({
@@ -26,6 +25,12 @@ const orderSchema = new Schema({
         required: true,
         min: 0
     },
+    // Uncomment below if you want to store payment method
+    // paymentMethod: {
+    //     type: String,
+    //     enum: ['card', 'upi', 'cod'],
+    //     default: 'cod'
+    // },
     status: {
         type: String,
         enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],

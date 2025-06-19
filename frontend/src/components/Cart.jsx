@@ -33,14 +33,15 @@ export default function Cart() {
     // Simulate payment processing
     setTimeout(async () => {
       try {
-        // Place order after payment
+        // Place order after payment (match your Order model)
         await placeOrder({
-          items: cartItems.map((item) => ({
+          products: cartItems.map((item) => ({
             product: item.product?._id || item.product,
             quantity: item.quantity,
           })),
-          total: totalWithDelivery,
-          paymentMethod: selectedPayment,
+          totalAmount: totalWithDelivery,
+          // status: 'pending', // optional, backend defaults to 'pending'
+          // paymentMethod: selectedPayment, // only if you add this field to your model
         });
         clearCart();
         setShowPayment(false);
