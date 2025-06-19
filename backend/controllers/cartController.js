@@ -5,8 +5,8 @@ import Product from '../models/Product.js';
 export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
-    res.status(200).json(cart);
+    if (!cart) return res.status(200).json([]); // Return empty array if no cart
+    res.status(200).json(cart.items); // Return only items array
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -41,7 +41,8 @@ export const addToCart = async (req, res) => {
     }
 
     await cart.save();
-    res.status(200).json({ message: "Product added to cart", cart });
+    await cart.populate('items.product');
+    res.status(200).json(cart.items); // Return updated items array
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -65,7 +66,8 @@ export const updateCartItem = async (req, res) => {
     item.quantity = quantity;
 
     await cart.save();
-    res.status(200).json({ message: "Cart updated", cart });
+    await cart.populate('items.product');
+    res.status(200).json(cart.items); // Return updated items array
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -82,7 +84,8 @@ export const removeFromCart = async (req, res) => {
     cart.items = cart.items.filter(i => i.product.toString() !== productId);
 
     await cart.save();
-    res.status(200).json({ message: "Item removed", cart });
+    await cart.populate('items.product');
+    res.status(200).json(cart.items); // Return updated items array
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -97,7 +100,7 @@ export const clearCart = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    res.status(200).json({ message: "Cart cleared" });
+    res.status(200).json([]); // Return empty array after clearing
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
