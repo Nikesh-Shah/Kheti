@@ -15,7 +15,7 @@ import FarmerOrders from './components/Farmer/ManageOrderFarmer';
 import AdminDashboard from "./components/AdminDashboard";
 import ProductDetailPage from './pages/ProductDetailPage';
 import Cartpage from './pages/Cartpage'
-
+import Order from './components/Order';
 function App() {
   return (
     <Router>
@@ -25,6 +25,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<Cartpage />} />
+        <Route path="/orders" element={<Order />} />
 
       
 

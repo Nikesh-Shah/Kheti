@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useRef, useEffect } from "react"
 import {
@@ -26,7 +25,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { cartCount } = useCart();
 
-  // Listen for auth changes (login/logout)
   useEffect(() => {
     const handler = () => {
       setIsLoggedIn(!!(localStorage.getItem('token') || sessionStorage.getItem('token')));
@@ -35,7 +33,6 @@ export default function Navbar() {
     return () => window.removeEventListener('auth-changed', handler);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -75,7 +72,6 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo */}
         <Link to="/" className="navbar-logo" style={{ textDecoration: "none" }}>
           <div className="logo-icon-container">
             <LuPackage className="logo-icon" />
@@ -93,15 +89,20 @@ export default function Navbar() {
             <span>Products</span>
           </Link>
           {isLoggedIn && (
-            <Link to="/cart" className="nav-link cart-link">
-              <LuShoppingCart className="nav-icon" />
-              <span>Cart</span>
-              {cartCount > 0 && (
-                <span className="cart-badge">{cartCount}</span>
-              )}
-            </Link>
+            <>
+              <Link to="/cart" className="nav-link cart-link">
+                <LuShoppingCart className="nav-icon" />
+                <span>Cart</span>
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
+                )}
+              </Link>
+              <Link to="/orders" className="nav-link">
+                <LuPackage className="nav-icon" />
+                <span>Orders</span>
+              </Link>
+            </>
           )}
-          {/* Show Login/Register for guests */}
           {!isLoggedIn && (
             <>
               <Link to="/auth" className="nav-link">
@@ -162,13 +163,19 @@ export default function Navbar() {
             <span>Products</span>
           </Link>
           {isLoggedIn && (
-            <Link to="/cart" className="mobile-nav-link">
-              <LuShoppingCart className="mobile-nav-icon" />
-              <span>Cart</span>
-              {cartCount > 0 && (
-                <span className="mobile-cart-badge">{cartCount}</span>
-              )}
-            </Link>
+            <>
+              <Link to="/cart" className="mobile-nav-link">
+                <LuShoppingCart className="mobile-nav-icon" />
+                <span>Cart</span>
+                {cartCount > 0 && (
+                  <span className="mobile-cart-badge">{cartCount}</span>
+                )}
+              </Link>
+              <Link to="/orders" className="mobile-nav-link">
+                <LuPackage className="mobile-nav-icon" />
+                <span>Orders</span>
+              </Link>
+            </>
           )}
           {/* Show Login/Register for guests in mobile menu */}
           {!isLoggedIn && (

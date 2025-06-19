@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getFarmerProducts, addProduct, updateProduct, deleteProduct } from "../../api/api"
+import { getFarmerProducts, addProduct, updateProduct, deleteProduct, getCategories } from "../../api/api"
 import {
   FaBox,
   FaPlus,
@@ -12,7 +12,6 @@ import {
   FaRupeeSign,
   FaBoxes,
   FaTags,
-  FaCheck,
   FaTimes,
   FaExclamationTriangle,
   FaSearch,
@@ -20,8 +19,17 @@ import {
 import Sidebar from "../Sidebar"
 import "../../Styles/ManageProductFarmer.css"
 
+// Helper to get correct image URL
+function getImageUrl(img) {
+  if (!img) return "/placeholder.svg?height=80&width=80";
+  if (img.startsWith("http")) return img;
+  if (img.startsWith("/uploads/")) return img;
+  return `/uploads/${img.replace(/\\/g, "/")}`;
+}
+
 export default function ManageProductFarmer() {
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -32,16 +40,17 @@ export default function ManageProductFarmer() {
     quantity: "",
     unit: "kg",
     category: "",
-    images: [],           // <-- Array of File objects
-    imagePreviews: [],    // <-- Array of preview URLs
+    images: [],
+    imagePreviews: [],
     description: "",
   })
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
 
-  // Fetch products on mount
+  // Fetch products and categories on mount
   useEffect(() => {
     fetchProducts()
+    fetchCategories()
   }, [])
  
 
@@ -54,6 +63,20 @@ export default function ManageProductFarmer() {
     } catch (err) {
       setProducts([])
       setError("Failed to fetch products. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function fetchCategories() {
+    setLoading(true)
+    setError("")
+    try {
+      const res = await getCategories()
+      setCategories(res.data || [])
+    } catch (err) {
+      setCategories([])
+      setError("Failed to fetch categories. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -121,12 +144,12 @@ export default function ManageProductFarmer() {
       price: product.price || "",
       quantity: product.quantity || "",
       unit: product.unit || "kg",
-      category: product.category || "",
+      category: product.category?._id || product.category || "",
       images: [], // New images will be selected by user
       imagePreviews: Array.isArray(product.image)
-        ? product.image.map(img => (img.startsWith("http") ? img : `/${img.replace(/\\/g, "/")}`))
+        ? product.image.map(getImageUrl)
         : product.image
-        ? [product.image]
+        ? [getImageUrl(product.image)]
         : [],
       description: product.description || "",
     })
@@ -149,14 +172,14 @@ export default function ManageProductFarmer() {
   // Cancel editing
   function handleCancel() {
     setEditingProduct(null)
-    setForm({ title: "", price: "", quantity: "", unit: "kg", category: "", image: "", description: "", imagePreview: "" })
+    setForm({ title: "", price: "", quantity: "", unit: "kg", category: "", images: [], imagePreviews: [], description: "" })
   }
 
   // Filter products based on search term
   const filteredProducts = products.filter(
     (p) =>
       (p.title || p.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.category || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.category?.name || p.category || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.description || "").toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
@@ -174,7 +197,6 @@ export default function ManageProductFarmer() {
       <Sidebar role="farmer" />
       <main className="dashboard-main">
         <div className="products-container">
-          {/* Header */}
           <div className="products-header">
             <div className="header-content">
               <h2 className="products-title">
@@ -294,14 +316,20 @@ export default function ManageProductFarmer() {
                     <FaTags className="input-icon" />
                     Category
                   </label>
-                  <input
+                  <select
                     id="category"
                     name="category"
-                    placeholder="Enter category"
                     value={form.category}
                     onChange={handleChange}
                     required
-                  />
+                  >
+                    <option value="">Select category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
@@ -323,7 +351,7 @@ export default function ManageProductFarmer() {
                         <img
                           key={idx}
                           src={src}
-                          alt={`Preview ${idx + 1}`}
+                          alt={`Product preview ${idx + 1}`}
                           style={{ maxWidth: 80, maxHeight: 80, marginRight: 8, borderRadius: 6 }}
                         />
                       ))}
@@ -345,20 +373,8 @@ export default function ManageProductFarmer() {
               </div>
 
               <div className="form-actions">
-                <button type="submit" className="submit-btn" disabled={submitting}>
-                  {submitting ? (
-                    <>
-                      <FaSpinner className="spinner-icon" /> {editingProduct ? "Updating..." : "Adding..."}
-                    </>
-                  ) : editingProduct ? (
-                    <>
-                      <FaCheck /> Update Product
-                    </>
-                  ) : (
-                    <>
-                      <FaPlus /> Add Product
-                    </>
-                  )}
+                <button type="submit" disabled={submitting}>
+                  {submitting ? "Adding..." : "Add Product"}
                 </button>
                 {editingProduct && (
                   <button type="button" className="cancel-btn" onClick={handleCancel}>
@@ -426,12 +442,12 @@ export default function ManageProductFarmer() {
                             <div className="product-image">
                               {Array.isArray(p.image) && p.image.length > 0 ? (
                                 <img
-                                  src={p.image[0].startsWith("http") ? p.image[0] : `/${p.image[0].replace(/\\/g, "/")}`}
+                                  src={getImageUrl(p.image[0])}
                                   alt={p.title || p.name}
                                   onError={e => { e.target.src = "/placeholder.svg?height=50&width=50" }}
                                 />
                               ) : (
-                                <img src="/placeholder.svg?height=50&width=50" alt="No image" />
+                                <img src="/placeholder.svg?height=50&width=50" alt="No product available" />
                               )}
                             </div>
                           </td>
@@ -447,7 +463,7 @@ export default function ManageProductFarmer() {
                           </td>
                           <td className="unit-cell">{p.unit}</td>
                           <td className="category-cell">
-                            <span className="category-badge">{p.category}</span>
+                            <span className="category-badge">{p.category?.name || p.category}</span>
                           </td>
                           <td className="actions-cell">
                             <div className="action-buttons">
@@ -473,19 +489,19 @@ export default function ManageProductFarmer() {
                         <div className="product-image">
                           {Array.isArray(p.image) && p.image.length > 0 ? (
                             <img
-                              src={p.image[0].startsWith("http") ? p.image[0] : `/${p.image[0].replace(/\\/g, "/")}`}
+                              src={getImageUrl(p.image[0])}
                               alt={p.title || p.name}
                               onError={e => { e.target.src = "/placeholder.svg?height=80&width=80" }}
                             />
                           ) : (
-                            <img src="/placeholder.svg?height=80&width=80" alt="No image" />
+                            <img src="/placeholder.svg?height=80&width=80" alt="No product available" />
                           )}
                         </div>
                         <div className="card-info">
                           <h4 className="card-title">{p.title || p.name}</h4>
                           <div className="card-meta">
                             <span className="card-price">{formatCurrency(p.price)}</span>
-                            <span className="card-category">{p.category}</span>
+                            <span className="card-category">{p.category?.name || p.category}</span>
                           </div>
                         </div>
                       </div>
