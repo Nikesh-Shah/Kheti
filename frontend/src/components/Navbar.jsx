@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import {
-  LuHouse,         
+  LuHouse,
   LuPackage,
   LuShoppingCart,
   LuUser,
@@ -13,18 +13,27 @@ import {
   LuX,
 } from "react-icons/lu";
 import { Link, useNavigate } from "react-router-dom";
-import "../Styles/Navbar.css" 
+import "../Styles/Navbar.css"
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
+  );
   const dropdownRef = useRef(null)
   const navigate = useNavigate();
   const { cartCount } = useCart();
 
-  // Check login status
-  const isLoggedIn = !!localStorage.getItem("token")
+  // Listen for auth changes (login/logout)
+  useEffect(() => {
+    const handler = () => {
+      setIsLoggedIn(!!(localStorage.getItem('token') || sessionStorage.getItem('token')));
+    };
+    window.addEventListener('auth-changed', handler);
+    return () => window.removeEventListener('auth-changed', handler);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -33,7 +42,6 @@ export default function Navbar() {
         setIsDropdownOpen(false)
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
@@ -52,6 +60,8 @@ export default function Navbar() {
     setIsDropdownOpen(false);
     if (action === "Logout") {
       localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
+      window.dispatchEvent(new Event('auth-changed'));
       navigate("/auth");
     }
     if (action === "Profile") {
@@ -73,7 +83,6 @@ export default function Navbar() {
           <span className="logo-text">Kheti</span>
         </Link>
 
-        {/* Desktop Navigation Links */}
         <div className="navbar-links">
           <Link to="/" className="nav-link active">
             <LuHouse className="nav-icon" />
@@ -136,7 +145,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile Menu Button */}
         <button className="mobile-menu-button" onClick={toggleMobileMenu}>
           {isMobileMenuOpen ? <LuX className="mobile-menu-icon" /> : <LuMenu className="mobile-menu-icon" />}
         </button>
@@ -149,7 +157,7 @@ export default function Navbar() {
             <LuHouse className="mobile-nav-icon" />
             <span>Home</span>
           </Link>
-          <Link to="/products" className="mobile-nav-link">
+          <Link to="/product" className="mobile-nav-link">
             <LuPackage className="mobile-nav-icon" />
             <span>Products</span>
           </Link>
@@ -157,7 +165,9 @@ export default function Navbar() {
             <Link to="/cart" className="mobile-nav-link">
               <LuShoppingCart className="mobile-nav-icon" />
               <span>Cart</span>
-              <span className="mobile-cart-badge">3</span>
+              {cartCount > 0 && (
+                <span className="mobile-cart-badge">{cartCount}</span>
+              )}
             </Link>
           )}
           {/* Show Login/Register for guests in mobile menu */}

@@ -15,11 +15,13 @@ import {
   LuBug,
 } from "react-icons/lu"
 import { getTopSellingByCategory } from "../api/api"
+import { useCart } from "../context/CartContext" // <-- Add this import
 
 export default function FeatureProduct() {
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState(new Set())
+  const { addItemToCart } = useCart() // <-- Use the context
 
   useEffect(() => {
     async function fetchTopSelling() {
@@ -156,7 +158,11 @@ export default function FeatureProduct() {
                         <span className="current-price">{formatPrice(product.price)}</span>
                         <span className="original-price">{formatPrice(product.price * 1.2)}</span>
                       </div>
-                      <button className="add-to-cart-btn">
+                      <button
+                        className="add-to-cart-btn"
+                        onClick={() => addItemToCart(product._id, 1)}
+                        type="button"
+                      >
                         <LuShoppingCart className="cart-icon" />
                         Add to Cart
                       </button>
