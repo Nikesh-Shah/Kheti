@@ -24,16 +24,21 @@ router.post(
   '/',
   authenticate,
   authorizeRoles('farmer', 'seller'),
-  upload.array('images', 6), // <-- add this middleware
+  upload.fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'images', maxCount: 10 }
+  ]),
   addProduct
 );
 
-// For updating a product (optional, if you want to allow updating images)
 router.put(
   '/:id',
   authenticate,
   authorizeRoles('farmer', 'seller'),
-  upload.array('images', 6), // <-- add this middleware if needed
+  upload.fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'images', maxCount: 10 }
+  ]),
   updateProduct
 );
 

@@ -193,9 +193,19 @@ export default function Product() {
                   <div className="product-image-container">
                     <img
                       src={
-                        Array.isArray(product.image) && product.image.length > 0
-                          ? (product.image[0].startsWith("http") ? product.image[0] : `/${product.image[0].replace(/\\/g, "/")}`)
-                          : "/placeholder.svg?height=200&width=200"
+                        product.mainImage
+                          ? (product.mainImage.startsWith("http")
+                              ? product.mainImage
+                              : product.mainImage.startsWith("/uploads/")
+                                ? product.mainImage
+                                : `/${product.mainImage.replace(/\\/g, "/")}`)
+                          : (Array.isArray(product.image) && product.image.length > 0
+                              ? (product.image[0].startsWith("http")
+                                  ? product.image[0]
+                                  : product.image[0].startsWith("/uploads/")
+                                    ? product.image[0]
+                                    : `/${product.image[0].replace(/\\/g, "/")}`)
+                              : "/placeholder.svg?height=200&width=200")
                       }
                       alt={name}
                       className="product-img"

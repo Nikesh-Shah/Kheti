@@ -1,17 +1,15 @@
 import multer from "multer";
 import path from "path";
 
-// Set storage engine
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Make sure this folder exists
+    cb(null, "uploads/"); 
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-// File filter (optional: only allow images)
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
@@ -21,4 +19,6 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage, fileFilter });
+
+// For routes: upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'images', maxCount: 10 }])
 export default upload;

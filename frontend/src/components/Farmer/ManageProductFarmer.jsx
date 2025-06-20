@@ -21,10 +21,11 @@ import "../../Styles/ManageProductFarmer.css"
 
 // Helper to get correct image URL
 function getImageUrl(img) {
-  if (!img) return "/placeholder.svg?height=80&width=80";
+  if (!img) return "/placeholder.svg";
   if (img.startsWith("http")) return img;
   if (img.startsWith("/uploads/")) return img;
-  return `/uploads/${img.replace(/\\/g, "/")}`;
+  if (img.startsWith("uploads/")) return `/${img.replace(/\\/g, "/")}`;
+  return "/placeholder.svg";
 }
 
 export default function ManageProductFarmer() {
@@ -33,26 +34,28 @@ export default function ManageProductFarmer() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  
+
+  // Main image and additional images
   const [form, setForm] = useState({
     title: "",
     price: "",
     quantity: "",
     unit: "kg",
     category: "",
+    mainImage: null,
+    mainImagePreview: "",
     images: [],
     imagePreviews: [],
     description: "",
   })
+  const [imageInputs, setImageInputs] = useState([0]) // for additional images
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
 
-  // Fetch products and categories on mount
   useEffect(() => {
     fetchProducts()
     fetchCategories()
   }, [])
- 
 
   async function fetchProducts() {
     setLoading(true)
@@ -82,23 +85,37 @@ export default function ManageProductFarmer() {
     }
   }
 
-  // Handle form input
   function handleChange(e) {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Handle image upload (multiple)
-  function handleImageChange(e) {
-    const files = Array.from(e.target.files);
-    setForm((prev) => ({
+  // Main image handler
+  function handleMainImageChange(e) {
+    const file = e.target.files[0];
+    setForm(prev => ({
       ...prev,
-      images: files,
-      imagePreviews: files.map(file => URL.createObjectURL(file)),
+      mainImage: file,
+      mainImagePreview: file ? URL.createObjectURL(file) : ""
     }));
   }
 
-  // Add or update product
+  // Additional images handler
+  function handleImageChange(e, idx) {
+    const file = e.target.files[0];
+    setForm(prev => {
+      const newImages = [...prev.images];
+      newImages[idx] = file;
+      const newPreviews = [...prev.imagePreviews];
+      newPreviews[idx] = file ? URL.createObjectURL(file) : undefined;
+      return { ...prev, images: newImages, imagePreviews: newPreviews };
+    });
+  }
+
+  function handleAddImageInput() {
+    setImageInputs(prev => [...prev, prev.length]);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setSubmitting(true)
@@ -110,7 +127,12 @@ export default function ManageProductFarmer() {
       formData.append("unit", form.unit)
       formData.append("category", form.category)
       formData.append("description", form.description)
-      form.images.forEach((img) => formData.append("images", img)) // append all images
+      if (form.mainImage) {
+        formData.append("mainImage", form.mainImage)
+      }
+      form.images.forEach(img => {
+        if (img) formData.append("images", img)
+      })
 
       if (editingProduct) {
         await updateProduct(editingProduct._id, formData)
@@ -123,10 +145,13 @@ export default function ManageProductFarmer() {
         quantity: "",
         unit: "kg",
         category: "",
+        mainImage: null,
+        mainImagePreview: "",
         images: [],
         imagePreviews: [],
         description: "",
       })
+      setImageInputs([0])
       setEditingProduct(null)
       fetchProducts()
     } catch (err) {
@@ -145,37 +170,45 @@ export default function ManageProductFarmer() {
       quantity: product.quantity || "",
       unit: product.unit || "kg",
       category: product.category?._id || product.category || "",
-      images: [], // New images will be selected by user
+      mainImage: null,
+      mainImagePreview: Array.isArray(product.image) && product.image.length > 0
+        ? getImageUrl(product.image[0])
+        : "",
+      images: [],
       imagePreviews: Array.isArray(product.image)
-        ? product.image.map(getImageUrl)
-        : product.image
-        ? [getImageUrl(product.image)]
+        ? product.image.slice(1).map(getImageUrl)
         : [],
       description: product.description || "",
     })
-    // Scroll to form
+    setImageInputs([0]) // reset additional image inputs
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Delete product
-  async function handleDelete(id) {
+  function handleDelete(id) {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await deleteProduct(id)
-        fetchProducts()
-      } catch {
-        setError("Error deleting product. Please try again.")
-      }
+      deleteProduct(id)
+        .then(fetchProducts)
+        .catch(() => setError("Error deleting product. Please try again."))
     }
   }
 
-  // Cancel editing
   function handleCancel() {
     setEditingProduct(null)
-    setForm({ title: "", price: "", quantity: "", unit: "kg", category: "", images: [], imagePreviews: [], description: "" })
+    setForm({
+      title: "",
+      price: "",
+      quantity: "",
+      unit: "kg",
+      category: "",
+      mainImage: null,
+      mainImagePreview: "",
+      images: [],
+      imagePreviews: [],
+      description: "",
+    })
+    setImageInputs([0])
   }
 
-  // Filter products based on search term
   const filteredProducts = products.filter(
     (p) =>
       (p.title || p.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -183,7 +216,6 @@ export default function ManageProductFarmer() {
       (p.description || "").toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -332,31 +364,48 @@ export default function ManageProductFarmer() {
                   </select>
                 </div>
 
+                {/* Main Image */}
                 <div className="form-group">
-                  <label htmlFor="images">
+                  <label>
                     <FaImage className="input-icon" />
-                    Images
+                    Main Image <span style={{color: "#d32f2f"}}>*</span>
                   </label>
                   <input
-                    id="images"
-                    name="images"
                     type="file"
                     accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
+                    required={!editingProduct}
+                    onChange={handleMainImageChange}
                   />
-                  {form.imagePreviews && form.imagePreviews.length > 0 && (
-                    <div className="image-preview-list">
-                      {form.imagePreviews.map((src, idx) => (
-                        <img
-                          key={idx}
-                          src={src}
-                          alt={`Product preview ${idx + 1}`}
-                          style={{ maxWidth: 80, maxHeight: 80, marginRight: 8, borderRadius: 6 }}
-                        />
-                      ))}
+                  <img
+                    src={form.mainImagePreview || "/placeholder.svg"}
+                    alt="Main product preview"
+                    style={{ maxWidth: 80, maxHeight: 80, marginTop: 8, borderRadius: 6 }}
+                  />
+                </div>
+
+                {/* Additional Images */}
+                <div className="form-group">
+                  <label>
+                    <FaImage className="input-icon" />
+                    Additional Images
+                  </label>
+                  {imageInputs.map((inputIdx) => (
+                    <div key={inputIdx} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={e => handleImageChange(e, inputIdx)}
+                      />
+                      <img
+                        src={form.imagePreviews[inputIdx] || "/placeholder.svg"}
+                        alt={`Product preview ${inputIdx + 1}`}
+                        style={{ maxWidth: 60, maxHeight: 60, marginLeft: 8, borderRadius: 6 }}
+                      />
                     </div>
-                  )}
+                  ))}
+                  <button type="button" className="add-image-btn" onClick={handleAddImageInput} style={{ marginTop: 4 }}>
+                    + Add More
+                  </button>
                 </div>
 
                 <div className="form-group full-width">
@@ -374,7 +423,7 @@ export default function ManageProductFarmer() {
 
               <div className="form-actions">
                 <button type="submit" disabled={submitting}>
-                  {submitting ? "Adding..." : "Add Product"}
+                  {submitting ? (editingProduct ? "Updating..." : "Adding...") : (editingProduct ? "Update Product" : "Add Product")}
                 </button>
                 {editingProduct && (
                   <button type="button" className="cancel-btn" onClick={handleCancel}>
@@ -422,7 +471,7 @@ export default function ManageProductFarmer() {
             ) : (
               <>
                 {/* Desktop Table */}
-                <div className="table-container">
+                {/* <div className="table-container">
                   <table className="product-table">
                     <thead>
                       <tr>
@@ -444,10 +493,10 @@ export default function ManageProductFarmer() {
                                 <img
                                   src={getImageUrl(p.image[0])}
                                   alt={p.title || p.name}
-                                  onError={e => { e.target.src = "/placeholder.svg?height=50&width=50" }}
+                                  onError={e => { e.target.src = "/placeholder.svg" }}
                                 />
                               ) : (
-                                <img src="/placeholder.svg?height=50&width=50" alt="No product available" />
+                                <img src="/placeholder.svg" alt="No product available" />
                               )}
                             </div>
                           </td>
@@ -479,7 +528,7 @@ export default function ManageProductFarmer() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </div> */}
 
                 {/* Mobile Cards */}
                 <div className="mobile-products">
@@ -491,10 +540,10 @@ export default function ManageProductFarmer() {
                             <img
                               src={getImageUrl(p.image[0])}
                               alt={p.title || p.name}
-                              onError={e => { e.target.src = "/placeholder.svg?height=80&width=80" }}
+                              onError={e => { e.target.src = "/placeholder.svg" }}
                             />
                           ) : (
-                            <img src="/placeholder.svg?height=80&width=80" alt="No product available" />
+                            <img src="/placeholder.svg" alt="No product available" />
                           )}
                         </div>
                         <div className="card-info">

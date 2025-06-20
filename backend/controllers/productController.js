@@ -3,7 +3,16 @@ import Product from '../models/Product.js';
 // Add a new product (supports multiple images)
 export const addProduct = async (req, res) => {
     try {
-        const images = req.files ? req.files.map(file => file.path) : [];
+        // mainImage: req.files['mainImage'] is an array with 1 file
+        const mainImage = req.files && req.files['mainImage'] && req.files['mainImage'][0]
+            ? req.files['mainImage'][0].path
+            : "";
+
+        // images: req.files['images'] is an array
+        const images = req.files && req.files['images']
+            ? req.files['images'].map(file => file.path)
+            : [];
+
         const { title, description, price, quantity, unit, category } = req.body;
 
         const product = new Product({
@@ -13,6 +22,7 @@ export const addProduct = async (req, res) => {
             quantity,
             unit,
             category,
+            mainImage,
             image: images,
             farmer: req.user.userId
         });
@@ -56,9 +66,14 @@ export const updateProduct = async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
-        // If new images are uploaded, replace the image array
-        if (req.files && req.files.length > 0) {
-            product.image = req.files.map(file => file.path);
+        // Update mainImage if uploaded
+        if (req.files && req.files['mainImage'] && req.files['mainImage'][0]) {
+            product.mainImage = req.files['mainImage'][0].path;
+        }
+
+        // Update additional images if uploaded
+        if (req.files && req.files['images']) {
+            product.image = req.files['images'].map(file => file.path);
         }
 
         // Update other fields
