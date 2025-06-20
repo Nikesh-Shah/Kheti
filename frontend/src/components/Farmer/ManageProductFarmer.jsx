@@ -19,13 +19,24 @@ import {
 import Sidebar from "../Sidebar"
 import "../../Styles/ManageProductFarmer.css"
 
-// Helper to get correct image URL
+// Define API base URL outside component for better performance
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Updated helper to get correct image URL with cross-origin support
 function getImageUrl(img) {
   if (!img) return "/placeholder.svg";
+  
+  // If it's already a full URL
   if (img.startsWith("http")) return img;
-  if (img.startsWith("/uploads/")) return img;
-  if (img.startsWith("uploads/")) return `/${img.replace(/\\/g, "/")}`;
-  return "/placeholder.svg";
+  
+  // If it starts with /uploads, add API base URL
+  if (img.startsWith("/uploads/")) return `${API_BASE_URL}${img}`;
+  
+  // If it starts with uploads/ without leading slash, add API base URL and leading slash
+  if (img.startsWith("uploads/")) return `${API_BASE_URL}/${img}`;
+  
+  // For any other value, just use as filename in uploads directory
+  return `${API_BASE_URL}/uploads/${img.split(/[/\\]/).pop()}`;
 }
 
 export default function ManageProductFarmer() {
@@ -117,10 +128,11 @@ export default function ManageProductFarmer() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setSubmitting(true)
+    e.preventDefault();
+    setSubmitting(true);
+    
     try {
-      const formData = new FormData()
+      const formData = new FormData();
       formData.append("title", form.title)
       formData.append("price", form.price)
       formData.append("quantity", form.quantity)
@@ -134,6 +146,12 @@ export default function ManageProductFarmer() {
         if (img) formData.append("images", img)
       })
 
+      // Add some debugging
+      console.log("FormData contents:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      
       if (editingProduct) {
         await updateProduct(editingProduct._id, formData)
       } else {
@@ -470,77 +488,34 @@ export default function ManageProductFarmer() {
               </div>
             ) : (
               <>
-                {/* Desktop Table */}
-                {/* <div className="table-container">
-                  <table className="product-table">
-                    <thead>
-                      <tr>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Category</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredProducts.map((p) => (
-                        <tr key={p._id}>
-                          <td className="image-cell">
-                            <div className="product-image">
-                              {Array.isArray(p.image) && p.image.length > 0 ? (
-                                <img
-                                  src={getImageUrl(p.image[0])}
-                                  alt={p.title || p.name}
-                                  onError={e => { e.target.src = "/placeholder.svg" }}
-                                />
-                              ) : (
-                                <img src="/placeholder.svg" alt="No product available" />
-                              )}
-                            </div>
-                          </td>
-                          <td className="name-cell">
-                            <div className="product-name">{p.title || p.name}</div>
-                            {p.description && <div className="product-description">{p.description}</div>}
-                          </td>
-                          <td className="price-cell">{formatCurrency(p.price)}</td>
-                          <td className="quantity-cell">
-                            <span className={`quantity-badge ${p.quantity <= 10 ? "low-stock" : ""}`}>
-                              {p.quantity}
-                            </span>
-                          </td>
-                          <td className="unit-cell">{p.unit}</td>
-                          <td className="category-cell">
-                            <span className="category-badge">{p.category?.name || p.category}</span>
-                          </td>
-                          <td className="actions-cell">
-                            <div className="action-buttons">
-                              <button className="edit-btn" onClick={() => handleEdit(p)}>
-                                <FaEdit /> Edit
-                              </button>
-                              <button className="delete-btn" onClick={() => handleDelete(p._id)}>
-                                <FaTrash /> Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div> */}
-
-                {/* Mobile Cards */}
                 <div className="mobile-products">
                   {filteredProducts.map((p) => (
                     <div key={p._id} className="product-card">
                       <div className="card-header">
                         <div className="product-image">
-                          {Array.isArray(p.image) && p.image.length > 0 ? (
+                          {p.mainImage ? (
+                            <img
+                              src={getImageUrl(p.mainImage)}
+                              alt={p.title || p.name}
+                              onError={e => { 
+                                const placeholderPath = "/placeholder.svg";
+                                if (!e.target.src.endsWith(placeholderPath)) {
+                                  e.target.src = placeholderPath;
+                                  e.target.onerror = null; // Prevent future errors
+                                }
+                              }}
+                            />
+                          ) : Array.isArray(p.image) && p.image.length > 0 ? (
                             <img
                               src={getImageUrl(p.image[0])}
                               alt={p.title || p.name}
-                              onError={e => { e.target.src = "/placeholder.svg" }}
+                              onError={e => { 
+                                const placeholderPath = "/placeholder.svg";
+                                if (!e.target.src.endsWith(placeholderPath)) {
+                                  e.target.src = placeholderPath;
+                                  e.target.onerror = null;
+                                }
+                              }}
                             />
                           ) : (
                             <img src="/placeholder.svg" alt="No product available" />
@@ -579,6 +554,17 @@ export default function ManageProductFarmer() {
           </div>
         </div>
       </main>
+
+      <div style={{display: 'none'}}>
+        {console.log("Products:", products)}
+        {filteredProducts.map((p, i) => (
+          <div key={i}>
+            <p>Product {i}: {p.title}</p>
+            <p>MainImage: {p.mainImage}</p>
+            <p>Images: {JSON.stringify(p.image)}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -3,19 +3,36 @@ import Product from '../models/Product.js';
 // Add a new product (supports multiple images)
 export const addProduct = async (req, res) => {
     try {
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+        
         // mainImage: req.files['mainImage'] is an array with 1 file
         const mainImage = req.files && req.files['mainImage'] && req.files['mainImage'][0]
-            ? req.files['mainImage'][0].path
+            ? `uploads/${req.files['mainImage'][0].filename}` // Use filename, not full path
             : "";
+        console.log('Main image path:', mainImage);
 
         // images: req.files['images'] is an array
         const images = req.files && req.files['images']
-            ? req.files['images'].map(file => file.path)
+            ? req.files['images'].map(file => `uploads/${file.filename}`) // Use filename, not full path
             : [];
+        console.log('Additional images paths:', images);
 
         const { title, description, price, quantity, unit, category } = req.body;
-
+        
         const product = new Product({
+            title,
+            description,
+            price,
+            quantity,
+            unit,
+            category,
+            mainImage,
+            image: images,
+            farmer: req.user.userId
+        });
+        
+        console.log('Product to save:', {
             title,
             description,
             price,
@@ -30,21 +47,22 @@ export const addProduct = async (req, res) => {
         await product.save();
         res.status(201).json(product);
     } catch (err) {
+        console.error('Error in addProduct:', err);
         res.status(400).json({ error: err.message });
     }
 };
 
 // Get all products
 export const getProducts = async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  try {
+    const products = await Product.find();
+    console.log("Products being returned:", products.slice(0, 2));
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-// Get a single product by ID
 export const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -55,7 +73,6 @@ export const getProductById = async (req, res) => {
     }
 };
 
-// Update a product (only the owner can update, supports new images)
 export const updateProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -68,12 +85,12 @@ export const updateProduct = async (req, res) => {
 
         // Update mainImage if uploaded
         if (req.files && req.files['mainImage'] && req.files['mainImage'][0]) {
-            product.mainImage = req.files['mainImage'][0].path;
+            product.mainImage = `uploads/${req.files['mainImage'][0].filename}`; // Use filename, not full path
         }
 
         // Update additional images if uploaded
         if (req.files && req.files['images']) {
-            product.image = req.files['images'].map(file => file.path);
+            product.image = req.files['images'].map(file => `uploads/${file.filename}`); // Use filename, not full path
         }
 
         // Update other fields

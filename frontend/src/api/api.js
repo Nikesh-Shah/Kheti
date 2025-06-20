@@ -1,18 +1,23 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
+  // Removed default Content-Type header
 });
 
-// Add auth token to requests
+// Add auth token and set Content-Type appropriately
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
+  
+  // Only set Content-Type for non-FormData requests
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json';
+  }
+  // For FormData, axios will automatically set the correct Content-Type with boundary
+  
   return config;
 });
 
@@ -53,7 +58,5 @@ export const addToCart = (data) => api.post('/cart', data);
 export const updateCartItem = (productId, quantity) => api.put('/cart', { productId, quantity });
 export const removeFromCart = (productId) => api.delete('/cart/item', { data: { productId } });
 export const clearCart = () => api.delete('/cart');
-
-
 
 export default api;

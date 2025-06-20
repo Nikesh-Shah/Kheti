@@ -8,6 +8,27 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-left: 280px; /* Width of your sidebar */
+  transition: margin-left 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: 0;
+  }
+}
+
 /* Header */
 .manage-users-header {
   margin-bottom: 2rem;

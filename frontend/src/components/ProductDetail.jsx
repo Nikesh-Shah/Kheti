@@ -3,7 +3,26 @@ import { useEffect, useState } from "react";
 import { getProductById } from "../api/api";
 import { useCart } from "../context/CartContext";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 import "../Styles/ProductDetail.css";
+
+// Define API base URL outside component
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Helper function to get correct image URL
+function getImageUrl(imgPath) {
+  if (!imgPath) return "/placeholder.svg";
+  
+  // If it's already a full URL
+  if (imgPath.startsWith("http")) return imgPath;
+  
+  // Handle uploads paths
+  if (imgPath.startsWith("uploads/")) return `${API_BASE_URL}/${imgPath}`;
+  if (imgPath.startsWith("/uploads/")) return `${API_BASE_URL}${imgPath}`;
+  
+  // Default case - assume it's just a filename
+  return `${API_BASE_URL}/uploads/${imgPath}`;
+}
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -11,6 +30,7 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  // const [imageErrors, setImageErrors] = useState(new Set());
   const { addItemToCart } = useCart();
 
   useEffect(() => {
@@ -18,14 +38,23 @@ export default function ProductDetail() {
       setLoading(true);
       try {
         const res = await getProductById(id);
+        console.log("Product data:", res.data);
         setProduct(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching product:", err);
       }
       setLoading(false);
     }
     fetchProduct();
   }, [id]);
+
+  // Image error handler
+  const handleImageError = (imgIndex, e) => {
+    console.error(`Failed to load image at index ${imgIndex}`);
+    // setImageErrors(prev => new Set(prev).add(imgIndex));
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = "/placeholder.svg";
+  };
 
   if (loading) return <div>Loading...</div>;
   if (!product) return <div>Product not found</div>;
@@ -43,43 +72,31 @@ export default function ProductDetail() {
         <div className="product-detail-gallery">
           <div className="main-image">
             <img
-              src={
-                images.length > 0
-                  ? (images[selectedImage].startsWith("http")
-                      ? images[selectedImage]
-                      : images[selectedImage].startsWith("/uploads/")
-                        ? images[selectedImage]
-                        : `/${images[selectedImage].replace(/\\/g, "/")}`)
-                  : "/placeholder.svg"
-              }
+              src={images.length > 0 ? getImageUrl(images[selectedImage]) : "/placeholder.svg"}
               alt={product.title}
               className="main-product-img"
+              onError={(e) => handleImageError(selectedImage, e)}
             />
           </div>
           <div className="thumbnail-row">
-            {images.length > 0
-              ? images.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={
-                      img.startsWith("http")
-                        ? img
-                        : img.startsWith("/uploads/")
-                          ? img
-                          : `/${img.replace(/\\/g, "/")}`
-                    }
-                    alt={`Thumbnail ${idx + 1}`}
-                    className={selectedImage === idx ? "active" : ""}
-                    onClick={() => setSelectedImage(idx)}
-                  />
-                ))
-              : (
+            {images.length > 0 ? (
+              images.map((img, idx) => (
                 <img
-                  src="/placeholder.svg"
-                  alt="No preview"
-                  style={{ width: 60, height: 60, borderRadius: 6, border: "1.5px solid #43a047" }}
+                  key={idx}
+                  src={getImageUrl(img)}
+                  alt={`Thumbnail ${idx + 1}`}
+                  className={selectedImage === idx ? "active" : ""}
+                  onClick={() => setSelectedImage(idx)}
+                  onError={(e) => handleImageError(idx, e)}
                 />
-              )}
+              ))
+            ) : (
+              <img
+                src="/placeholder.svg"
+                alt="No preview"
+                style={{ width: 60, height: 60, borderRadius: 6, border: "1.5px solid #43a047" }}
+              />
+            )}
           </div>
         </div>
         <div className="product-detail-info">
@@ -102,6 +119,8 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+            <Footer />
+
     </>
   );
 }

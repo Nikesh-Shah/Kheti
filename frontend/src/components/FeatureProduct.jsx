@@ -15,20 +15,59 @@ import {
   LuBug,
 } from "react-icons/lu"
 import { getTopSellingByCategory } from "../api/api"
-import { useCart } from "../context/CartContext" // <-- Add this import
+import { useCart } from "../context/CartContext" 
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Helper function to get correct product image URL
+function getProductImageUrl(product) {
+  if (!product) return "/placeholder.svg";
+  
+  // Try mainImage first
+  if (product.mainImage) {
+    if (product.mainImage.startsWith("http")) return product.mainImage;
+    if (product.mainImage.startsWith("uploads/")) return `${API_BASE_URL}/${product.mainImage}`;
+    if (product.mainImage.startsWith("/uploads/")) return `${API_BASE_URL}${product.mainImage}`;
+    return `${API_BASE_URL}/uploads/${product.mainImage}`;
+  }
+  
+  // Then try image array
+  if (Array.isArray(product.image) && product.image.length > 0) {
+    const img = product.image[0];
+    if (!img) return "/placeholder.svg";
+    
+    if (img.startsWith("http")) return img;
+    if (img.startsWith("uploads/")) return `${API_BASE_URL}/${img}`;
+    if (img.startsWith("/uploads/")) return `${API_BASE_URL}${img}`;
+    return `${API_BASE_URL}/uploads/${img}`;
+  }
+  
+  // Then try image string (older products)
+  if (typeof product.image === 'string' && product.image) {
+    if (product.image.startsWith("http")) return product.image;
+    if (product.image.startsWith("uploads/")) return `${API_BASE_URL}/${product.image}`;
+    if (product.image.startsWith("/uploads/")) return `${API_BASE_URL}${product.image}`;
+    return `${API_BASE_URL}/uploads/${product.image}`;
+  }
+  
+  return "/placeholder.svg";
+}
 
 export default function FeatureProduct() {
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState(new Set())
-  const { addItemToCart } = useCart() // <-- Use the context
+  const [imageErrors, setImageErrors] = useState(new Set()) // Track images with errors
+  const { addItemToCart } = useCart() 
 
   useEffect(() => {
     async function fetchTopSelling() {
       try {
         const res = await getTopSellingByCategory()
+        console.log("Featured products:", res.data);
         setData(res.data)
-      } catch {
+      } catch (err) {
+        console.error("Error fetching featured products:", err);
         setData({})
       } finally {
         setLoading(false)
@@ -45,6 +84,14 @@ export default function FeatureProduct() {
       newFavorites.add(productId)
     }
     setFavorites(newFavorites)
+  }
+
+  // Handle image errors
+  const handleImageError = (productId, e) => {
+    console.error(`Failed to load image for product ${productId}`);
+    setImageErrors(prev => new Set(prev).add(productId));
+    e.target.onerror = null; // Prevent infinite loop
+    e.target.src = "/placeholder.svg";
   }
 
   const getCategoryIcon = (category) => {
@@ -121,13 +168,20 @@ export default function FeatureProduct() {
                 <div key={product._id} className="feature-product-card">
                   <div className="product-image-container">
                     <img
-                      src={product.image || "/placeholder.svg?height=200&width=200"}
-                      alt={product.name}
+                      src={imageErrors.has(product._id) ? 
+                           "/placeholder.svg" : 
+                           getProductImageUrl(product)}
+                      alt={product.name || product.title}
                       className="feature-product-img"
+                      onError={(e) => handleImageError(product._id, e)}
                     />
                     <button
                       className={`favorite-btn ${favorites.has(product._id) ? "active" : ""}`}
-                      onClick={() => toggleFavorite(product._id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleFavorite(product._id);
+                      }}
                       aria-label="Add to favorites"
                     >
                       <LuHeart className="heart-icon" />
@@ -139,7 +193,7 @@ export default function FeatureProduct() {
                   </div>
 
                   <div className="product-content">
-                    <h4 className="product-name">{product.name}</h4>
+                    <h4 className="product-name">{product.name || product.title}</h4>
                     <p className="product-description">
                       {product.description?.length > 80
                         ? `${product.description.substring(0, 80)}...`
@@ -160,7 +214,11 @@ export default function FeatureProduct() {
                       </div>
                       <button
                         className="add-to-cart-btn"
-                        onClick={() => addItemToCart(product._id, 1)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addItemToCart(product._id, 1);
+                        }}
                         type="button"
                       >
                         <LuShoppingCart className="cart-icon" />

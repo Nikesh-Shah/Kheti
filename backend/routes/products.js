@@ -16,8 +16,8 @@ const router = express.Router();
 
 router.get('/', getProducts);
 router.get('/category/:category', getProductsByCategory);
-router.get('/farmer', authenticate, getProductsByFarmer); // ✅ Must come before `/:id`
-router.get('/:id', getProductById); // ✅ Dynamic routes last
+router.get('/farmer', authenticate, getProductsByFarmer); 
+router.get('/:id', getProductById); 
 
 
 router.post(

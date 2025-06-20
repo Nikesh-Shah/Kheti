@@ -31,6 +31,9 @@ const categoryIcons = {
   Pest: <LuBug className="category-icon" />,
 }
 
+// Move API_BASE_URL outside component for better performance
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000'; 
+
 export default function Product() {
   const { addItemToCart } = useCart()
   const [products, setProducts] = useState([])
@@ -39,14 +42,20 @@ export default function Product() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [addedToCartItems, setAddedToCartItems] = useState(new Set())
+  const [imageErrors, setImageErrors] = useState(new Set()) // Track images with errors
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         // Use res.data for array response, fallback to res.data.products for object response
         const res = await getProducts()
-        setProducts(res.data.products || res.data || [])
-      } catch {
+        const fetchedProducts = res.data.products || res.data || []
+        setProducts(fetchedProducts)
+        
+        // Debug log the first few products
+        console.log("Fetched products:", fetchedProducts.slice(0, 2));
+      } catch (err) {
+        console.error("Error fetching products:", err);
         setProducts([])
       } finally {
         setLoading(false)
@@ -104,6 +113,62 @@ export default function Product() {
         return newSet
       })
     }, 2000)
+  }
+
+  // Improved image URL helper with better error handling and caching
+  function getProductImageUrl(product) {
+    // Return placeholder for error-tracked images to avoid retries
+    if (product && product._id && imageErrors.has(product._id)) {
+      return "/placeholder.svg";
+    }
+    
+    if (!product) return "/placeholder.svg";
+    
+    // For mainImage
+    if (product.mainImage) {
+      // If already a full URL, use as is
+      if (product.mainImage.startsWith("http")) return product.mainImage;
+      
+      // Handle relative paths by adding API base URL
+      if (product.mainImage.startsWith("uploads/")) {
+        return `${API_BASE_URL}/${product.mainImage}`;
+      }
+      
+      // For paths with leading slash
+      if (product.mainImage.startsWith("/uploads/")) {
+        return `${API_BASE_URL}${product.mainImage}`;
+      }
+      
+      // For just the filename
+      return `${API_BASE_URL}/uploads/${product.mainImage}`;
+    }
+    
+    // Try image array if mainImage doesn't exist
+    if (Array.isArray(product.image) && product.image.length > 0) {
+      const img = product.image[0];
+      if (!img) return "/placeholder.svg";
+      
+      if (img.startsWith("http")) return img;
+      if (img.startsWith("uploads/")) return `${API_BASE_URL}/${img}`;
+      if (img.startsWith("/uploads/")) return `${API_BASE_URL}${img}`;
+      return `${API_BASE_URL}/uploads/${img}`;
+    }
+    
+    return "/placeholder.svg";
+  }
+
+  // Handle image errors better
+  const handleImageError = (productId, e) => {
+    console.error(`Failed to load image for product ${productId}`);
+    
+    // Track this product as having image errors
+    setImageErrors(prev => new Set(prev).add(productId));
+    
+    // Prevent further error loops
+    e.target.onerror = null;
+    
+    // Set placeholder
+    e.target.src = "/placeholder.svg";
   }
 
   if (loading) {
@@ -192,27 +257,18 @@ export default function Product() {
                 <div className="product-card">
                   <div className="product-image-container">
                     <img
-                      src={
-                        product.mainImage
-                          ? (product.mainImage.startsWith("http")
-                              ? product.mainImage
-                              : product.mainImage.startsWith("/uploads/")
-                                ? product.mainImage
-                                : `/${product.mainImage.replace(/\\/g, "/")}`)
-                          : (Array.isArray(product.image) && product.image.length > 0
-                              ? (product.image[0].startsWith("http")
-                                  ? product.image[0]
-                                  : product.image[0].startsWith("/uploads/")
-                                    ? product.image[0]
-                                    : `/${product.image[0].replace(/\\/g, "/")}`)
-                              : "/placeholder.svg?height=200&width=200")
-                      }
+                      src={getProductImageUrl(product)}
                       alt={name}
                       className="product-img"
+                      onError={(e) => handleImageError(product._id, e)}
                     />
                     <button
                       className={`favorite-btn ${favorites.has(product._id) ? "active" : ""}`}
-                      onClick={() => handleFavorite(product._id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleFavorite(product._id);
+                      }}
                       aria-label="Add to favorites"
                     >
                       <LuHeart className="heart-icon" />
