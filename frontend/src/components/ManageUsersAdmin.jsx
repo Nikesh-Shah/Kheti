@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { getAllUsers, updateUser, deleteUser } from "../api/api"
 import "../Styles/ManageUsersAdmin.css"
-import Sidebar from "./Sidebar" // Import the Sidebar component
+import Sidebar from "./Sidebar"
 
 export default function ManageUsersAdmin() {
   const [users, setUsers] = useState([])
@@ -41,7 +41,6 @@ export default function ManageUsersAdmin() {
   function filterUsers() {
     let filtered = users
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
         (user) =>
@@ -50,9 +49,11 @@ export default function ManageUsersAdmin() {
       )
     }
 
-    // Filter by role
+    // Filter by role, replacing 'farmer' with 'seller' in the UI only
     if (roleFilter !== "all") {
-      filtered = filtered.filter((user) => user.role === roleFilter)
+      // Handle both 'seller' in UI and 'farmer' in database
+      const dbRole = roleFilter === "seller" ? "farmer" : roleFilter
+      filtered = filtered.filter((user) => user.role === dbRole)
     }
 
     setFilteredUsers(filtered)
@@ -65,12 +66,16 @@ export default function ManageUsersAdmin() {
       firstName: user.firstName || "",
       lastName: user.lastName || "",
       email: user.email || "",
+      // Keep the original role, but don't allow changing it
       role: user.role || "",
     })
   }
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    // Only update the field if it's not the role field
+    if (e.target.name !== "role") {
+      setForm({ ...form, [e.target.name]: e.target.value })
+    }
   }
 
   async function handleUpdate(e) {
@@ -78,7 +83,9 @@ export default function ManageUsersAdmin() {
     setError("")
     setSuccess("")
     try {
-      await updateUser(editingUser._id, form)
+      // Send update without the role field to ensure it's not changed
+      const { role, ...updateData } = form
+      await updateUser(editingUser._id, updateData)
       setSuccess("User updated successfully!")
       setEditingUser(null)
       fetchUsers()
@@ -109,6 +116,12 @@ export default function ManageUsersAdmin() {
     return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase() || "?"
   }
 
+  // Display role name - show "Seller" instead of "farmer" in the UI
+  function displayRoleName(role) {
+    if (role === "farmer") return "Seller"
+    return role.charAt(0).toUpperCase() + role.slice(1)
+  }
+
   // Pagination
   const indexOfLastUser = currentPage * usersPerPage
   const indexOfFirstUser = indexOfLastUser - usersPerPage
@@ -119,26 +132,30 @@ export default function ManageUsersAdmin() {
 
   if (loading) {
     return (
-      <div className="manage-users-admin">
-        <div className="users-loading">
-          <svg className="loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-            <path
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              className="opacity-75"
-            ></path>
-          </svg>
-          <h3>Loading Users</h3>
-          <p>Please wait while we fetch the user data...</p>
-        </div>
+      <div className="dashboard-layout">
+        <Sidebar role="admin" />
+        <main className="dashboard-main">
+          <div className="manage-users-admin">
+            <div className="users-loading">
+              <svg className="loading-spinner" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                <path
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  className="opacity-75"
+                ></path>
+              </svg>
+              <h3>Loading Users</h3>
+              <p>Please wait while we fetch the user data...</p>
+            </div>
+          </div>
+        </main>
       </div>
     )
   }
 
   return (
     <div className="dashboard-layout">
-      {/* Add the Sidebar component */}
       <Sidebar role="admin" />
       
       <main className="dashboard-main">
@@ -158,7 +175,7 @@ export default function ManageUsersAdmin() {
             </h2>
           </div>
 
-          {/* Controls */}
+          {/* Controls - Updated to show "Seller" instead of "Farmer" */}
           <div className="users-controls">
             <div className="search-container">
               <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +197,7 @@ export default function ManageUsersAdmin() {
             <select className="role-filter" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
               <option value="all">All Roles</option>
               <option value="user">Users</option>
-              <option value="farmer">Farmers</option>
+              <option value="seller">Sellers</option> {/* Changed from 'farmer' to 'seller' */}
               <option value="admin">Admins</option>
             </select>
           </div>
@@ -224,7 +241,7 @@ export default function ManageUsersAdmin() {
             </div>
           )}
 
-          {/* Desktop Table */}
+          {/* Desktop Table - Updated to display "Seller" instead of "farmer" */}
           <div className="users-table-container">
             <div className="table-header">
               <h3 className="table-title">
@@ -238,7 +255,7 @@ export default function ManageUsersAdmin() {
                 </svg>
                 User Directory
               </h3>
-              <p className="table-subtitle">Manage all registered users, farmers, and administrators</p>
+              <p className="table-subtitle">Manage all registered users and sellers</p>
             </div>
 
             {filteredUsers.length === 0 ? (
@@ -285,7 +302,8 @@ export default function ManageUsersAdmin() {
                             </div>
                           </td>
                           <td>
-                            <span className={`role-badge ${user.role}`}>{user.role}</span>
+                            {/* Display "Seller" instead of "farmer" */}
+                            <span className={`role-badge ${user.role}`}>{displayRoleName(user.role)}</span>
                           </td>
                           <td>
                             <span className="role-badge active">Active</span>
@@ -361,7 +379,7 @@ export default function ManageUsersAdmin() {
             )}
           </div>
 
-          {/* Mobile Cards */}
+          {/* Mobile Cards - Updated to display "Seller" instead of "farmer" */}
           <div className="users-cards">
             {currentUsers.map((user) => (
               <div key={user._id} className="user-card">
@@ -375,7 +393,8 @@ export default function ManageUsersAdmin() {
                   </div>
                 </div>
                 <div className="user-card-role">
-                  <span className={`role-badge ${user.role}`}>{user.role}</span>
+                  {/* Display "Seller" instead of "farmer" */}
+                  <span className={`role-badge ${user.role}`}>{displayRoleName(user.role)}</span>
                 </div>
                 <div className="user-card-actions">
                   <button className="action-btn edit-btn" onClick={() => handleEdit(user)}>
@@ -405,7 +424,7 @@ export default function ManageUsersAdmin() {
             ))}
           </div>
 
-          {/* Edit User Modal */}
+          {/* Edit User Modal - with disabled role field */}
           {editingUser && (
             <div className="edit-form-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
               <div className="edit-form-container">
@@ -465,13 +484,14 @@ export default function ManageUsersAdmin() {
                     </div>
 
                     <div className="form-group">
-                      <label className="form-label">Role</label>
-                      <select name="role" value={form.role} onChange={handleChange} className="form-select" required>
-                        <option value="">Select a role</option>
-                        <option value="user">User</option>
-                        <option value="farmer">Farmer</option>
-                        <option value="admin">Admin</option>
-                      </select>
+                      <label className="form-label">Role (Cannot be changed)</label>
+                      <input
+                        type="text"
+                        value={displayRoleName(form.role)}
+                        className="form-inputadmin"
+                        disabled
+                        style={{ backgroundColor: "#f3f4f6", cursor: "not-allowed" }}
+                      />
                     </div>
 
                     <div className="form-actions">

@@ -39,7 +39,6 @@ export default function FarmerDashboard() {
             ? `${user.firstName} ${user.lastName}`
             : user?.firstName || user?.name || user?.email || "seller"
         )
-        // DEBUG: Print to console
         console.log("Fetched products:", prodRes.data)
         console.log("Fetched orders:", orderRes.data)
         console.log("User from localStorage:", user)
@@ -59,17 +58,14 @@ export default function FarmerDashboard() {
     fetchData()
   }, [])
 
-  // Quick stats
   const totalProducts = products.length
   const totalOrders = orders.length
   const pendingOrders = orders.filter((o) => o.status === "pending").length
 
-  // Products added this week
   const startOfWeek = new Date()
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
   const productsThisWeek = products.filter(p => p.createdAt && new Date(p.createdAt) >= startOfWeek).length
 
-  // Monthly earnings and last month earnings for dynamic percentage
   const now = new Date()
   const thisMonth = now.getMonth()
   const thisYear = now.getFullYear()
@@ -95,7 +91,6 @@ export default function FarmerDashboard() {
     ? Math.round(((monthlyEarnings - lastMonthEarnings) / lastMonthEarnings) * 100)
     : 0
 
-  // Top-selling products (by order count)
   const productSales = {}
   orders.forEach((order) => {
     ;(order.items || []).forEach((item) => {
@@ -110,11 +105,8 @@ export default function FarmerDashboard() {
     .sort((a, b) => b.sales - a.sales)
     .slice(0, 3)
 
-  // Inventory alerts (low stock)
   const lowStock = products.filter((p) => p.quantity <= 10)
 
-  // --- Graph Data ---
-  // Sales per month (last 6 months)
   const months = Array.from({ length: 6 }, (_, i) => {
     const d = new Date()
     d.setMonth(d.getMonth() - (5 - i))
@@ -202,7 +194,6 @@ export default function FarmerDashboard() {
         <div className="dashboard-container">
 
 
-          {/* Header */}
           <div className="dashboard-header">
             <div className="header-content">
               <div className="header-text">
@@ -227,7 +218,6 @@ export default function FarmerDashboard() {
             </div>
           ) : (
             <div className="dashboard-content">
-              {/* Quick Stats */}
               <div className="stats-grid">
                 <div className="stat-card products">
                   <div className="stat-icon-container">
@@ -277,9 +267,7 @@ export default function FarmerDashboard() {
                 </div>
               </div>
 
-              {/* Charts and Analytics */}
               <div className="dashboard-grid">
-                {/* Sales Chart */}
                 <div className="dashboard-card chart-card">
                   <div className="card-header">
                     <h3 className="card-title">
@@ -293,7 +281,6 @@ export default function FarmerDashboard() {
                   </div>
                 </div>
 
-                {/* Top Products */}
                 <div className="dashboard-card">
                   <div className="card-header">
                     <h3 className="card-title">
@@ -332,7 +319,6 @@ export default function FarmerDashboard() {
                 </div>
               </div>
 
-              {/* Inventory Alerts */}
               {lowStock.length > 0 && (
                 <div className="dashboard-card alert-card">
                   <div className="card-header">

@@ -78,8 +78,11 @@ export const updateProduct = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        // Check if the logged-in user is the owner
-        if (product.farmer.toString() !== req.user.userId) {
+        // Allow if user is owner or admin (same logic as in deleteProduct)
+        if (
+            product.farmer.toString() !== req.user.userId &&
+            req.user.role !== "admin"
+        ) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
