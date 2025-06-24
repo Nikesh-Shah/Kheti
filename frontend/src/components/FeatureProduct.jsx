@@ -19,37 +19,28 @@ import { useCart } from "../context/CartContext"
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Helper function to get correct product image URL
 function getProductImageUrl(product) {
   if (!product) return "/placeholder.svg";
-  
-  // Try mainImage first
   if (product.mainImage) {
     if (product.mainImage.startsWith("http")) return product.mainImage;
     if (product.mainImage.startsWith("uploads/")) return `${API_BASE_URL}/${product.mainImage}`;
     if (product.mainImage.startsWith("/uploads/")) return `${API_BASE_URL}${product.mainImage}`;
     return `${API_BASE_URL}/uploads/${product.mainImage}`;
   }
-  
-  // Then try image array
   if (Array.isArray(product.image) && product.image.length > 0) {
     const img = product.image[0];
     if (!img) return "/placeholder.svg";
-    
     if (img.startsWith("http")) return img;
     if (img.startsWith("uploads/")) return `${API_BASE_URL}/${img}`;
     if (img.startsWith("/uploads/")) return `${API_BASE_URL}${img}`;
     return `${API_BASE_URL}/uploads/${img}`;
   }
-  
-  // Then try image string (older products)
   if (typeof product.image === 'string' && product.image) {
     if (product.image.startsWith("http")) return product.image;
     if (product.image.startsWith("uploads/")) return `${API_BASE_URL}/${product.image}`;
     if (product.image.startsWith("/uploads/")) return `${API_BASE_URL}${product.image}`;
     return `${API_BASE_URL}/uploads/${product.image}`;
   }
-  
   return "/placeholder.svg";
 }
 
@@ -57,17 +48,15 @@ export default function FeatureProduct() {
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(true)
   const [favorites, setFavorites] = useState(new Set())
-  const [imageErrors, setImageErrors] = useState(new Set()) // Track images with errors
+  const [imageErrors, setImageErrors] = useState(new Set())
   const { addItemToCart } = useCart() 
 
   useEffect(() => {
     async function fetchTopSelling() {
       try {
         const res = await getTopSellingByCategory()
-        console.log("Featured products:", res.data);
         setData(res.data)
       } catch (err) {
-        console.error("Error fetching featured products:", err);
         setData({})
       } finally {
         setLoading(false)
@@ -86,11 +75,9 @@ export default function FeatureProduct() {
     setFavorites(newFavorites)
   }
 
-  // Handle image errors
   const handleImageError = (productId, e) => {
-    console.error(`Failed to load image for product ${productId}`);
     setImageErrors(prev => new Set(prev).add(productId));
-    e.target.onerror = null; // Prevent infinite loop
+    e.target.onerror = null;
     e.target.src = "/placeholder.svg";
   }
 

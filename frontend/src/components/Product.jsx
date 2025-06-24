@@ -76,13 +76,12 @@ export default function Product() {
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "INR",
+      currency: "NPR",
       minimumFractionDigits: 0,
     }).format(price)
   }
 
   const filteredProducts = products.filter((product) => {
-    // Use product.title for your DB, fallback to product.name for compatibility
     const name = product.title || product.name || ""
     const matchesSearch =
       name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,7 +90,6 @@ export default function Product() {
     return matchesSearch && matchesCategory
   })
 
-  // Get unique categories (capitalize first letter for display)
   const categories = [
     "All",
     ...Array.from(new Set(products.map((product) =>
@@ -115,9 +113,7 @@ export default function Product() {
     }, 2000)
   }
 
-  // Improved image URL helper with better error handling and caching
   function getProductImageUrl(product) {
-    // Return placeholder for error-tracked images to avoid retries
     if (product && product._id && imageErrors.has(product._id)) {
       return "/placeholder.svg";
     }
@@ -143,7 +139,6 @@ export default function Product() {
       return `${API_BASE_URL}/uploads/${product.mainImage}`;
     }
     
-    // Try image array if mainImage doesn't exist
     if (Array.isArray(product.image) && product.image.length > 0) {
       const img = product.image[0];
       if (!img) return "/placeholder.svg";

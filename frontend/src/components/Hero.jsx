@@ -53,14 +53,10 @@ export default function Hero() {
             </div>
             <div className="hero-actions">
               <Link to="/register" className="hero-button primary">
-                {/* <LuUserRound className="nav-icon" /> */}
                 <LuArrowRight className="button-icon" />
                 <span>Get Started Today</span>
               </Link>
-              {/* <button className="hero-button primary">
-                Get Started Today
-                <LuArrowRight className="button-icon" />
-              </button> */}
+        
               <button className="hero-button secondary">
                 <LuPlay className="button-icon" />
                 Watch Demo

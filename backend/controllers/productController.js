@@ -1,20 +1,17 @@
 import Product from '../models/Product.js';
 
-// Add a new product (supports multiple images)
 export const addProduct = async (req, res) => {
     try {
         console.log('Request body:', req.body);
         console.log('Request files:', req.files);
         
-        // mainImage: req.files['mainImage'] is an array with 1 file
         const mainImage = req.files && req.files['mainImage'] && req.files['mainImage'][0]
-            ? `uploads/${req.files['mainImage'][0].filename}` // Use filename, not full path
+            ? `uploads/${req.files['mainImage'][0].filename}` 
             : "";
         console.log('Main image path:', mainImage);
 
-        // images: req.files['images'] is an array
         const images = req.files && req.files['images']
-            ? req.files['images'].map(file => `uploads/${file.filename}`) // Use filename, not full path
+            ? req.files['images'].map(file => `uploads/${file.filename}`) 
             : [];
         console.log('Additional images paths:', images);
 
@@ -52,7 +49,6 @@ export const addProduct = async (req, res) => {
     }
 };
 
-// Get all products
 export const getProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -78,7 +74,6 @@ export const updateProduct = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        // Allow if user is owner or admin (same logic as in deleteProduct)
         if (
             product.farmer.toString() !== req.user.userId &&
             req.user.role !== "admin"
@@ -86,17 +81,14 @@ export const updateProduct = async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
-        // Update mainImage if uploaded
         if (req.files && req.files['mainImage'] && req.files['mainImage'][0]) {
             product.mainImage = `uploads/${req.files['mainImage'][0].filename}`; // Use filename, not full path
         }
 
-        // Update additional images if uploaded
         if (req.files && req.files['images']) {
             product.image = req.files['images'].map(file => `uploads/${file.filename}`); // Use filename, not full path
         }
 
-        // Update other fields
         const { title, description, price, quantity, unit, category } = req.body;
         if (title !== undefined) product.title = title;
         if (description !== undefined) product.description = description;
@@ -112,13 +104,11 @@ export const updateProduct = async (req, res) => {
     }
 };
 
-// Delete a product (only the owner can delete)
 export const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        // Allow if user is owner or admin
         if (
             product.farmer.toString() !== req.user.userId &&
             req.user.role !== "admin"
@@ -133,7 +123,6 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
-// Get products by category
 export const getProductsByCategory = async (req, res) => {
     try {
         const { category } = req.params;
@@ -144,7 +133,6 @@ export const getProductsByCategory = async (req, res) => {
     }
 };
 
-// Get products by farmer (owner)
 export const getProductsByFarmer = async (req, res) => {
     try {
         if (!req.user || !req.user.userId) {

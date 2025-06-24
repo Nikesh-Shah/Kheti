@@ -48,7 +48,6 @@ export default function ManageCategoryAdmin() {
     setForm({ name: category.name, _id: category._id })
     setError("")
     setSuccess("")
-    // Scroll to form
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -73,7 +72,6 @@ export default function ManageCategoryAdmin() {
       setForm({ name: "", _id: null })
       fetchCategories()
 
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
       setError("Failed to save category. Please try again.")
@@ -92,7 +90,6 @@ export default function ManageCategoryAdmin() {
       setSuccess("Category deleted successfully!")
       fetchCategories()
 
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
       setError("Failed to delete category. Please try again.")
@@ -105,7 +102,6 @@ export default function ManageCategoryAdmin() {
     setSuccess("")
   }
 
-  // Filter categories based on search term
   const filteredCategories = categories.filter((cat) => cat.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
   return (
@@ -113,7 +109,6 @@ export default function ManageCategoryAdmin() {
       <Sidebar role="admin" />
       <main className="dashboard-main-admin">
         <div className="category-container-admin">
-          {/* Header */}
           <div className="category-header-admin">
             <div className="header-content-admin">
               <h2 className="category-title-admin">
@@ -132,7 +127,6 @@ export default function ManageCategoryAdmin() {
             </div>
           </div>
 
-          {/* Success Message */}
           {success && (
             <div className="success-message-admin">
               <FaCheck className="success-icon-admin" />
@@ -143,7 +137,6 @@ export default function ManageCategoryAdmin() {
             </div>
           )}
 
-          {/* Error Message */}
           {error && (
             <div className="error-message-admin">
               <FaExclamationTriangle className="error-icon-admin" />
@@ -154,7 +147,6 @@ export default function ManageCategoryAdmin() {
             </div>
           )}
 
-          {/* Category Form */}
           <div className="form-container-admin">
             <div className="form-header-admin">
               <h3 className="form-title-admin">
@@ -213,7 +205,6 @@ export default function ManageCategoryAdmin() {
             </form>
           </div>
 
-          {/* Categories List */}
           <div className="categories-list-container-admin">
             <div className="list-header-admin">
               <h3 className="list-title-admin">
@@ -252,7 +243,6 @@ export default function ManageCategoryAdmin() {
               </div>
             ) : (
               <>
-                {/* Desktop Table */}
                 <div className="table-container-admin">
                   <table className="category-table-admin">
                     <thead>
@@ -299,7 +289,6 @@ export default function ManageCategoryAdmin() {
                   </table>
                 </div>
 
-                {/* Mobile Cards */}
                 <div className="mobile-categories-admin">
                   {filteredCategories.map((cat, index) => (
                     <div key={cat._id || index} className="category-card-admin">

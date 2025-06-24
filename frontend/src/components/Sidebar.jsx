@@ -1,4 +1,3 @@
-"use client"
 
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -41,17 +40,13 @@ export default function Sidebar({ role, userName }) {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <button className="mobile-menu-btn" onClick={toggleMobile}>
         {isMobileOpen ? <LuX /> : <LuMenu />}
       </button>
 
-      {/* Mobile Overlay */}
       {isMobileOpen && <div className="mobile-overlay" onClick={closeMobile}></div>}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${isCollapsed ? "collapsed" : ""} ${isMobileOpen ? "mobile-open" : ""}`}>
-        {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="logo-icon"><LuSprout /></div>
@@ -62,7 +57,6 @@ export default function Sidebar({ role, userName }) {
           </button>
         </div>
 
-        {/* User Info */}
         <div className="sidebar-user">
           <div className="user-avatar">{role === "admin" ? <LuShield /> : <LuUser />}</div>
           {!isCollapsed && userName && (
@@ -73,7 +67,6 @@ export default function Sidebar({ role, userName }) {
           )}
         </div>
 
-        {/* Navigation */}
         <nav className="sidebar-nav">
           <ul className="nav-list">
             {links.map((link) => (
@@ -88,7 +81,6 @@ export default function Sidebar({ role, userName }) {
                 </Link>
               </li>
             ))}
-            {/* Logout Button */}
             <li className="nav-item">
               <button
                 className="nav-link-sidebar"
@@ -102,7 +94,6 @@ export default function Sidebar({ role, userName }) {
           </ul>
         </nav>
 
-        {/* Sidebar Footer */}
         <div className="sidebar-footer">
           {!isCollapsed && (
             <div className="footer-content">

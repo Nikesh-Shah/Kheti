@@ -34,7 +34,6 @@ export default function AdminDashboard() {
         setProducts(productRes.data?.products || productRes.data || [])
         setOrders(orderRes.data || [])
 
-        // Get admin name from localStorage if available
         const userStr = typeof window !== "undefined" ? localStorage.getItem("user") : null
         let user = null
         try {
@@ -55,7 +54,6 @@ export default function AdminDashboard() {
     fetchData()
   }, [])
 
-  // Stats calculations
   const totalUsers = users.length
   const totalProducts = products.length
   const totalOrders = orders.length
@@ -67,7 +65,6 @@ export default function AdminDashboard() {
     return orderDate.getMonth() === currentMonth
   }).length
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -81,7 +78,6 @@ export default function AdminDashboard() {
       <Sidebar role="admin" userName={adminName} />
       <main className="dashboard-main">
         <div className="dashboard-container">
-          {/* Header */}
           <div className="dashboard-header">
             <div className="header-content">
               <div className="header-text">
@@ -117,7 +113,6 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="dashboard-content">
-              {/* Quick Stats */}
               <div className="stats-grid">
                 <div className="stat-card users">
                   <div className="stat-icon-container">
@@ -164,9 +159,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Dashboard Sections */}
               <div className="dashboard-grid">
-                {/* Recent Users */}
                 <div className="dashboard-card">
                   <div className="card-header">
                     <h3 className="card-title">
@@ -220,7 +213,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Recent Orders */}
                 <div className="dashboard-card">
                   <div className="card-header">
                     <h3 className="card-title">
@@ -274,7 +266,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Pending Orders Alert */}
               {pendingOrders > 0 && (
                 <div className="dashboard-card alert-card">
                   <div className="card-header">

@@ -26,23 +26,16 @@ function App() {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<Cartpage />} />
         <Route path="/orders" element={<Order />} />
-
-      
-
-        {/* Admin routes */}
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/manage-products" element={<ManageProducts />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-categories" element={<ManageCategory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/manage-orders" element={<ManageOrdersAdmin />} />
-
-        {/* Farmer routes */}
         <Route path="/farmer/dashboard" element={<FarmerDashboardPage />} />
         <Route path="/farmer/manage-products" element={<FarmerProducts />} />
         <Route path="/farmer/manage-orders" element={<FarmerOrders />} />
         <Route path="/farmer" element={<FarmerDashboard />} />
-
         <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </Router>

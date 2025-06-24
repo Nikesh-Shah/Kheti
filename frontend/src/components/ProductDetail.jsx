@@ -6,21 +6,16 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "../Styles/ProductDetail.css";
 
-// Define API base URL outside component
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Helper function to get correct image URL
 function getImageUrl(imgPath) {
   if (!imgPath) return "/placeholder.svg";
   
-  // If it's already a full URL
   if (imgPath.startsWith("http")) return imgPath;
   
-  // Handle uploads paths
   if (imgPath.startsWith("uploads/")) return `${API_BASE_URL}/${imgPath}`;
   if (imgPath.startsWith("/uploads/")) return `${API_BASE_URL}${imgPath}`;
   
-  // Default case - assume it's just a filename
   return `${API_BASE_URL}/uploads/${imgPath}`;
 }
 
@@ -30,7 +25,6 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-  // const [imageErrors, setImageErrors] = useState(new Set());
   const { addItemToCart } = useCart();
 
   useEffect(() => {
@@ -48,18 +42,15 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  // Image error handler
   const handleImageError = (imgIndex, e) => {
     console.error(`Failed to load image at index ${imgIndex}`);
-    // setImageErrors(prev => new Set(prev).add(imgIndex));
-    e.target.onerror = null; // Prevent infinite loop
+    e.target.onerror = null;
     e.target.src = "/placeholder.svg";
   };
 
   if (loading) return <div>Loading...</div>;
   if (!product) return <div>Product not found</div>;
 
-  // Gather all images: mainImage first, then ...image[]
   const images = [
     ...(product.mainImage ? [product.mainImage] : []),
     ...(Array.isArray(product.image) ? product.image : [])
@@ -119,8 +110,7 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
-            <Footer />
-
+      <Footer />
     </>
   );
 }

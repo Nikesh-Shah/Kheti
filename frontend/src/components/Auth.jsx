@@ -39,13 +39,10 @@ export default function Auth() {
       if (isLogin) {
         const res = await loginUser({ email: form.email, password: form.password })
         
-        // Store token based on remember me setting
         if (rememberMe) {
-          // Persist token in localStorage (survives browser restarts)
           localStorage.setItem("token", res.data.token)
           localStorage.setItem("user", JSON.stringify(res.data.user))
         } else {
-          // Store in sessionStorage (cleared when browser is closed)
           sessionStorage.setItem("token", res.data.token)
           sessionStorage.setItem("user", JSON.stringify(res.data.user))
         }
@@ -81,7 +78,6 @@ export default function Auth() {
     setLoading(false)
   }
 
-  // When checking if user is logged in
   const isLoggedIn = () => {
     return !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
   }

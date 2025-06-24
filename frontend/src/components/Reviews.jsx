@@ -5,7 +5,7 @@ import { LuStar, LuQuote, LuCheck } from "react-icons/lu"
 export default function Reviews() {
   const reviews = [
     {
-      name: "Sarah Johnson",
+      name: "Nikesh",
       role: "Organic Farm Owner",
       rating: 5,
       comment:
@@ -13,7 +13,7 @@ export default function Reviews() {
       avatar: "/placeholder.svg?height=60&width=60",
     },
     {
-      name: "Michael Chen",
+      name: "Rohan",
       role: "Wheat Farmer",
       rating: 5,
       comment:
@@ -21,7 +21,7 @@ export default function Reviews() {
       avatar: "/placeholder.svg?height=60&width=60",
     },
     {
-      name: "Emily Rodriguez",
+      name: "Madan Rai",
       role: "Vegetable Grower",
       rating: 5,
       comment:
@@ -29,7 +29,7 @@ export default function Reviews() {
       avatar: "/placeholder.svg?height=60&width=60",
     },
     {
-      name: "David Thompson",
+      name: "David aalam",
       role: "Dairy Farmer",
       rating: 4,
       comment:
@@ -37,7 +37,7 @@ export default function Reviews() {
       avatar: "/placeholder.svg?height=60&width=60",
     },
     {
-      name: "Lisa Wang",
+      name: "Lisa Gupta",
       role: "Fruit Orchard Owner",
       rating: 5,
       comment:
@@ -45,7 +45,7 @@ export default function Reviews() {
       avatar: "/placeholder.svg?height=60&width=60",
     },
     {
-      name: "Robert Martinez",
+      name: "Robert Chaudhary",
       role: "Corn Farmer",
       rating: 5,
       comment:

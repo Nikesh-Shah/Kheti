@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-// Middleware to authenticate user using JWT
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -16,7 +15,6 @@ export const authenticate = (req, res, next) => {
   }
 };
 
-// Middleware to authorize specific roles
 export const authorizeRoles = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'Access denied' });

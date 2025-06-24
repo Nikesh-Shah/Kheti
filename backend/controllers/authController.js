@@ -1,7 +1,6 @@
 import User from '../models/users.js';
 import jwt from 'jsonwebtoken';
 
-// Register controller
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password, phoneNumber, role } = req.body;
@@ -26,15 +25,12 @@ export const register = async (req, res) => {
   }
 };
 
-// Login controller
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    // Select password explicitly
     const user = await User.findOne({ email }).select('+password');
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Compare password using bcrypt
     const bcrypt = await import('bcrypt');
     const isMatch = await bcrypt.default.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
@@ -60,11 +56,9 @@ export const login = async (req, res) => {
   }
 };
 
-// Update user
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    // Only allow certain fields to be updated
     const { firstName, lastName, email, phoneNumber } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       id,
@@ -78,7 +72,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Delete user
+
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -90,10 +84,9 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password"); // Exclude password field
+    const users = await User.find({}, "-password"); 
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: "Server error" });

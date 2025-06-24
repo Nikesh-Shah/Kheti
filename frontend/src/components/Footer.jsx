@@ -25,10 +25,8 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      {/* Main Footer Content */}
       <div className="footer-container">
         <div className="footer-content">
-          {/* Company Info */}
           <div className="footer-section">
             <div className="footer-logo">
               <div className="footer-logo-icon">
@@ -59,7 +57,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="footer-section">
             <h3 className="footer-title">Quick Links</h3>
             <ul className="footer-links">
@@ -96,7 +93,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Products & Services */}
           <div className="footer-section">
             <h3 className="footer-title">Our Solutions</h3>
             <ul className="footer-links">
@@ -136,7 +132,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div className="footer-section">
             <h3 className="footer-title">Get In Touch</h3>
             <div className="footer-contact">
@@ -150,8 +145,8 @@ export default function Footer() {
               <div className="contact-item">
                 <LuPhone className="contact-icon" />
                 <div className="contact-info">
-                  <p>+1 (555) 123-4567</p>
-                  <p>+1 (555) 987-6543</p>
+                  <p>+977 9804343767</p>
+                  <p>+977 9800000000</p>
                 </div>
               </div>
               <div className="contact-item">
@@ -165,7 +160,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
         <div className="newsletter-section">
           <div className="newsletter-content">
             <div className="newsletter-info">
@@ -185,7 +179,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Footer */}
         <div className="footer-bottom">
           <div className="footer-bottom-content">
             <div className="footer-copyright">
@@ -206,7 +199,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Scroll to Top Button */}
       <button className="scroll-to-top" onClick={scrollToTop} aria-label="Scroll to top">
         <LuArrowUp className="scroll-icon" />
       </button>

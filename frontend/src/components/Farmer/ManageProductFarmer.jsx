@@ -19,23 +19,17 @@ import {
 import Sidebar from "../Sidebar"
 import "../../Styles/ManageProductFarmer.css"
 
-// Define API base URL outside component for better performance
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Updated helper to get correct image URL with cross-origin support
 function getImageUrl(img) {
   if (!img) return "/placeholder.svg";
   
-  // If it's already a full URL
   if (img.startsWith("http")) return img;
   
-  // If it starts with /uploads, add API base URL
   if (img.startsWith("/uploads/")) return `${API_BASE_URL}${img}`;
   
-  // If it starts with uploads/ without leading slash, add API base URL and leading slash
   if (img.startsWith("uploads/")) return `${API_BASE_URL}/${img}`;
   
-  // For any other value, just use as filename in uploads directory
   return `${API_BASE_URL}/uploads/${img.split(/[/\\]/).pop()}`;
 }
 
@@ -46,7 +40,6 @@ export default function ManageProductFarmer() {
   const [submitting, setSubmitting] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
 
-  // Main image and additional images
   const [form, setForm] = useState({
     title: "",
     price: "",
@@ -59,7 +52,7 @@ export default function ManageProductFarmer() {
     imagePreviews: [],
     description: "",
   })
-  const [imageInputs, setImageInputs] = useState([0]) // for additional images
+  const [imageInputs, setImageInputs] = useState([0]) 
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
 
@@ -101,7 +94,6 @@ export default function ManageProductFarmer() {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Main image handler
   function handleMainImageChange(e) {
     const file = e.target.files[0];
     setForm(prev => ({
@@ -111,7 +103,6 @@ export default function ManageProductFarmer() {
     }));
   }
 
-  // Additional images handler
   function handleImageChange(e, idx) {
     const file = e.target.files[0];
     setForm(prev => {
@@ -146,7 +137,6 @@ export default function ManageProductFarmer() {
         if (img) formData.append("images", img)
       })
 
-      // Add some debugging
       console.log("FormData contents:");
       for (let pair of formData.entries()) {
         console.log(pair[0], pair[1]);
@@ -179,7 +169,6 @@ export default function ManageProductFarmer() {
     }
   }
 
-  // Edit product (show previews for existing images)
   function handleEdit(product) {
     setEditingProduct(product)
     setForm({
@@ -198,7 +187,7 @@ export default function ManageProductFarmer() {
         : [],
       description: product.description || "",
     })
-    setImageInputs([0]) // reset additional image inputs
+    setImageInputs([0]) 
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -267,7 +256,6 @@ export default function ManageProductFarmer() {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="error-message">
               <FaExclamationTriangle className="error-icon" />
@@ -278,7 +266,6 @@ export default function ManageProductFarmer() {
             </div>
           )}
 
-          {/* Product Form */}
           <div className="form-container">
             <div className="form-header">
               <h3 className="form-title">
@@ -382,7 +369,6 @@ export default function ManageProductFarmer() {
                   </select>
                 </div>
 
-                {/* Main Image */}
                 <div className="form-group">
                   <label>
                     <FaImage className="input-icon" />
@@ -401,7 +387,6 @@ export default function ManageProductFarmer() {
                   />
                 </div>
 
-                {/* Additional Images */}
                 <div className="form-group">
                   <label>
                     <FaImage className="input-icon" />
@@ -501,7 +486,7 @@ export default function ManageProductFarmer() {
                                 const placeholderPath = "/placeholder.svg";
                                 if (!e.target.src.endsWith(placeholderPath)) {
                                   e.target.src = placeholderPath;
-                                  e.target.onerror = null; // Prevent future errors
+                                  e.target.onerror = null; 
                                 }
                               }}
                             />

@@ -21,27 +21,22 @@ export default function Cart() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  // Calculate total with delivery fee
   const deliveryFee = cartItems.length > 0 ? 50 : 0;
   const totalWithDelivery = cartTotal + deliveryFee;
 
-  // Handle payment process
   const handleBuyNow = async () => {
     if (!selectedPayment) return;
     setPaymentLoading(true);
 
-    // Simulate payment processing
     setTimeout(async () => {
       try {
-        // Place order after payment (match your Order model)
         await placeOrder({
           products: cartItems.map((item) => ({
             product: item.product?._id || item.product,
             quantity: item.quantity,
           })),
           totalAmount: totalWithDelivery,
-          // status: 'pending', // optional, backend defaults to 'pending'
-          // paymentMethod: selectedPayment, // only if you add this field to your model
+     
         });
         clearCart();
         setShowPayment(false);
@@ -54,7 +49,6 @@ export default function Cart() {
     }, 2000);
   };
 
-  // Empty cart UI
   if (!loading && (!cartItems || cartItems.length === 0)) {
     return (
       <div className="cart-empty-beautiful">
@@ -166,7 +160,6 @@ export default function Cart() {
         </>
       )}
 
-      {/* Payment Modal */}
       {showPayment && (
         <div className="cart-modal-overlay-cart">
           <div className="cart-modal-cart">
@@ -233,7 +226,6 @@ export default function Cart() {
         </div>
       )}
 
-      {/* Success Modal */}
       {showSuccess && (
         <div className="cart-modal-overlay-cart">
           <div className="cart-modal-cart">

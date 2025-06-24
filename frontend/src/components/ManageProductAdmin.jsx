@@ -1,26 +1,21 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { getProducts, deleteProduct, updateProduct, getProductById } from "../api/api"
+import { getProducts, deleteProduct} from "../api/api"
 import Sidebar from "./Sidebar"
 import "../Styles/ManageProductAdmin.css"
 import { useNavigate } from "react-router-dom"
 
-// Define API base URL outside component for better performance
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Helper function to get correct image URL
 function getImageUrl(imgPath) {
   if (!imgPath) return "/placeholder.svg";
   
-  // If it's already a full URL
   if (imgPath.startsWith("http")) return imgPath;
   
-  // Handle uploads paths
   if (imgPath.startsWith("uploads/")) return `${API_BASE_URL}/${imgPath}`;
   if (imgPath.startsWith("/uploads/")) return `${API_BASE_URL}${imgPath}`;
   
-  // Default case - assume it's just a filename
   return `${API_BASE_URL}/uploads/${imgPath}`;
 }
 
@@ -37,7 +32,6 @@ export default function ManageProductAdmin() {
   const [productsPerPage] = useState(10)
 
   useEffect(() => {
-    // Check if user is authenticated and is admin
     const checkAuth = () => {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
@@ -45,7 +39,6 @@ export default function ManageProductAdmin() {
         return false;
       }
       
-      // Check if user is admin (from stored user data or token)
       const userData = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
       if (userData.role !== 'admin') {
         navigate('/', { state: { message: 'Access denied. Admin privileges required.' } });
@@ -68,7 +61,6 @@ export default function ManageProductAdmin() {
       const productsData = res.data || []
       setProducts(productsData)
 
-      // Extract unique categories
       const uniqueCategories = [...new Set(productsData.map((product) => {
         return typeof product.category === 'object' 
           ? product.category.name 
@@ -79,7 +71,6 @@ export default function ManageProductAdmin() {
     } catch (err) {
       console.error("Error fetching products:", err)
       if (err.response?.status === 401) {
-        // Handle token expiration
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
@@ -97,23 +88,19 @@ export default function ManageProductAdmin() {
     setSuccess("")
     
     try {
-      // Get token from storage
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
         setError("Authentication required. Please log in again.");
         return;
       }
       
-      // Pass token in request headers
       await deleteProduct(id);
       setSuccess("Product deleted successfully!")
-      // Refresh the products list
       fetchProducts()
     } catch (err) {
       console.error("Error deleting product:", err)
       
       if (err.response?.status === 401) {
-        // Handle token expiration
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
@@ -126,7 +113,6 @@ export default function ManageProductAdmin() {
   }
 
   function handleEdit(productId) {
-    // Check authentication before navigating
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (!token) {
       setError("Authentication required. Please log in again.");
@@ -136,12 +122,10 @@ export default function ManageProductAdmin() {
       return;
     }
     
-    // Navigate to product edit page
     navigate(`/admin/edit-product/${productId}`);
   }
 
   function handleView(productId) {
-    // Navigate to product details page
     navigate(`/product/${productId}`)
   }
 
@@ -150,7 +134,6 @@ export default function ManageProductAdmin() {
     setSuccess("")
   }
 
-  // Filter products based on search term and category
   const filteredProducts = products.filter((product) => {
     const title = product.title || product.name || "";
     const category = typeof product.category === 'object' 
@@ -166,21 +149,18 @@ export default function ManageProductAdmin() {
     return matchesSearch && matchesCategory
   })
 
-  // Get stock status
   const getStockStatus = (quantity) => {
     if (quantity <= 0) return "out-of-stock"
     if (quantity < 10) return "low-stock"
     return "in-stock"
   }
 
-  // Get farmer initials
   const getFarmerInitials = (farmer) => {
     if (!farmer) return "NA"
     if (typeof farmer === "string") return farmer.charAt(0).toUpperCase()
     return farmer.firstName ? farmer.firstName.charAt(0).toUpperCase() : "NA"
   }
 
-  // Pagination
   const indexOfLastProduct = currentPage * productsPerPage
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct)
@@ -419,8 +399,7 @@ export default function ManageProductAdmin() {
                 </tbody>
               </table>
 
-              {/* Mobile view - cards */}
-              <div className="products-grid">
+\              <div className="products-grid">
                 {currentProducts.map((product) => (
                   <div className="product-card" key={product._id}>
                     <div className="product-card-image">
@@ -521,7 +500,6 @@ export default function ManageProductAdmin() {
                 ))}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="pagination">
                   <button 

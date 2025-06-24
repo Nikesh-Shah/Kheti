@@ -85,7 +85,7 @@ export default function ManageOrderFarmer() {
       <Sidebar role="farmer"  />
       <main className="dashboard-main">
         <div className="orders-container">
-          {/* Header */}
+          
           <div className="orders-header">
             <div className="header-content">
               <h2 className="orders-title">
@@ -106,7 +106,6 @@ export default function ManageOrderFarmer() {
             </div>
           </div>
 
-          {/* Content */}
           {loading ? (
             <div className="loading-state">
               <FaSpinner className="loading-spinner" />
@@ -130,7 +129,6 @@ export default function ManageOrderFarmer() {
             </div>
           ) : (
             <div className="orders-content">
-              {/* Desktop Table */}
               <div className="table-container">
                 <table className="orders-table">
                   <thead>
@@ -237,7 +235,6 @@ export default function ManageOrderFarmer() {
                 </table>
               </div>
 
-              {/* Mobile Cards */}
               <div className="mobile-orders">
                 {orders.map((order) => (
                   <div key={order._id} className="mobile-order-card">

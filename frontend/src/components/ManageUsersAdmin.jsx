@@ -49,9 +49,7 @@ export default function ManageUsersAdmin() {
       )
     }
 
-    // Filter by role, replacing 'farmer' with 'seller' in the UI only
     if (roleFilter !== "all") {
-      // Handle both 'seller' in UI and 'farmer' in database
       const dbRole = roleFilter === "seller" ? "farmer" : roleFilter
       filtered = filtered.filter((user) => user.role === dbRole)
     }
@@ -66,13 +64,11 @@ export default function ManageUsersAdmin() {
       firstName: user.firstName || "",
       lastName: user.lastName || "",
       email: user.email || "",
-      // Keep the original role, but don't allow changing it
       role: user.role || "",
     })
   }
 
   function handleChange(e) {
-    // Only update the field if it's not the role field
     if (e.target.name !== "role") {
       setForm({ ...form, [e.target.name]: e.target.value })
     }
@@ -83,7 +79,6 @@ export default function ManageUsersAdmin() {
     setError("")
     setSuccess("")
     try {
-      // Send update without the role field to ensure it's not changed
       const { role, ...updateData } = form
       await updateUser(editingUser._id, updateData)
       setSuccess("User updated successfully!")
@@ -116,13 +111,11 @@ export default function ManageUsersAdmin() {
     return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase() || "?"
   }
 
-  // Display role name - show "Seller" instead of "farmer" in the UI
   function displayRoleName(role) {
     if (role === "farmer") return "Seller"
     return role.charAt(0).toUpperCase() + role.slice(1)
   }
 
-  // Pagination
   const indexOfLastUser = currentPage * usersPerPage
   const indexOfFirstUser = indexOfLastUser - usersPerPage
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser)
@@ -160,7 +153,6 @@ export default function ManageUsersAdmin() {
       
       <main className="dashboard-main">
         <div className="manage-users-admin">
-          {/* Header */}
           <div className="manage-users-header">
             <h2>
               <svg className="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +167,6 @@ export default function ManageUsersAdmin() {
             </h2>
           </div>
 
-          {/* Controls - Updated to show "Seller" instead of "Farmer" */}
           <div className="users-controls">
             <div className="search-container">
               <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,12 +188,11 @@ export default function ManageUsersAdmin() {
             <select className="role-filter" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
               <option value="all">All Roles</option>
               <option value="user">Users</option>
-              <option value="seller">Sellers</option> {/* Changed from 'farmer' to 'seller' */}
+              <option value="seller">Sellers</option>
               <option value="admin">Admins</option>
             </select>
           </div>
 
-          {/* Messages */}
           {success && (
             <div className="message message-success">
               <svg className="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,7 +231,6 @@ export default function ManageUsersAdmin() {
             </div>
           )}
 
-          {/* Desktop Table - Updated to display "Seller" instead of "farmer" */}
           <div className="users-table-container">
             <div className="table-header">
               <h3 className="table-title">
@@ -302,7 +291,6 @@ export default function ManageUsersAdmin() {
                             </div>
                           </td>
                           <td>
-                            {/* Display "Seller" instead of "farmer" */}
                             <span className={`role-badge ${user.role}`}>{displayRoleName(user.role)}</span>
                           </td>
                           <td>
@@ -340,7 +328,6 @@ export default function ManageUsersAdmin() {
                   </table>
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="pagination">
                     <button
@@ -379,7 +366,6 @@ export default function ManageUsersAdmin() {
             )}
           </div>
 
-          {/* Mobile Cards - Updated to display "Seller" instead of "farmer" */}
           <div className="users-cards">
             {currentUsers.map((user) => (
               <div key={user._id} className="user-card">
@@ -393,7 +379,6 @@ export default function ManageUsersAdmin() {
                   </div>
                 </div>
                 <div className="user-card-role">
-                  {/* Display "Seller" instead of "farmer" */}
                   <span className={`role-badge ${user.role}`}>{displayRoleName(user.role)}</span>
                 </div>
                 <div className="user-card-actions">
@@ -424,7 +409,6 @@ export default function ManageUsersAdmin() {
             ))}
           </div>
 
-          {/* Edit User Modal - with disabled role field */}
           {editingUser && (
             <div className="edit-form-overlay" onClick={(e) => e.target === e.currentTarget && setEditingUser(null)}>
               <div className="edit-form-container">

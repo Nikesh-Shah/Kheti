@@ -62,7 +62,6 @@ export default function ManageOrdersAdmin() {
       await updateOrderStatus(orderId, { status })
       setSuccess("Order status updated successfully!")
       fetchOrders()
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
       setError("Failed to update order status.")
@@ -80,14 +79,12 @@ export default function ManageOrdersAdmin() {
       await deleteOrder(orderId)
       setSuccess("Order deleted successfully!")
       fetchOrders()
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(""), 3000)
     } catch (err) {
       setError("Failed to delete order.")
     }
   }
 
-  // Filter and sort orders
   const filteredOrders = orders
     .filter((order) => {
       const matchesSearch =
@@ -158,7 +155,6 @@ export default function ManageOrdersAdmin() {
       <Sidebar role="admin" />
       <main className="dashboard-main-orders-admin">
         <div className="orders-container-admin">
-          {/* Header */}
           <div className="orders-header-admin">
             <div className="header-content-orders-admin">
               <h2 className="orders-title-admin">
@@ -185,7 +181,6 @@ export default function ManageOrdersAdmin() {
             </div>
           </div>
 
-          {/* Success Message */}
           {success && (
             <div className="success-message-orders-admin">
               <FaCheck className="success-icon-orders-admin" />
@@ -196,7 +191,6 @@ export default function ManageOrdersAdmin() {
             </div>
           )}
 
-          {/* Error Message */}
           {error && (
             <div className="error-message-orders-admin">
               <FaExclamationTriangle className="error-icon-orders-admin" />
@@ -207,7 +201,6 @@ export default function ManageOrdersAdmin() {
             </div>
           )}
 
-          {/* Filters */}
           <div className="filters-container-admin">
             <div className="search-container-orders-admin">
               <FaSearch className="search-icon-orders-admin" />
@@ -248,14 +241,12 @@ export default function ManageOrdersAdmin() {
             </div>
           </div>
 
-          {/* Results Info */}
           <div className="results-info-admin">
             <span className="results-count-admin">
               Showing {filteredOrders.length} of {orders.length} orders
             </span>
           </div>
 
-          {/* Content */}
           {loading ? (
             <div className="loading-state-orders-admin">
               <FaSpinner className="loading-spinner-orders-admin" />
@@ -276,7 +267,6 @@ export default function ManageOrdersAdmin() {
             </div>
           ) : (
             <div className="orders-content-admin">
-              {/* Desktop Table */}
               <div className="table-container-orders-admin">
                 <table className="orders-table-admin">
                   <thead>
@@ -368,7 +358,6 @@ export default function ManageOrdersAdmin() {
                 </table>
               </div>
 
-              {/* Mobile Cards */}
               <div className="mobile-orders-admin">
                 {filteredOrders.map((order) => (
                   <div key={order._id} className="order-card-admin">

@@ -11,8 +11,8 @@ const productSchema = new mongoose.Schema({
         default: 'kg',
         required: true
     },
-    mainImage: { type: String, trim: true }, // <-- Add this
-    image: [{ type: String, trim: true }],   // Additional images
+    mainImage: { type: String, trim: true }, 
+    image: [{ type: String, trim: true }],   
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category', 

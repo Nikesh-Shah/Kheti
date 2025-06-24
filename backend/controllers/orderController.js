@@ -1,12 +1,10 @@
 import Order from '../models/Order.js';
 
-// Place a new order (Buyer)
 export const placeOrder = async (req, res) => {
     try {
         const { products, totalAmount, paymentMethod } = req.body;
         const buyer = req.user.userId;
 
-        // Validate products array
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: 'No products in order.' });
         }
@@ -20,7 +18,6 @@ export const placeOrder = async (req, res) => {
             totalAmount
         };
 
-        // If you added paymentMethod to your model, include it
         if (paymentMethod) orderData.paymentMethod = paymentMethod;
 
         const order = new Order(orderData);
@@ -31,7 +28,6 @@ export const placeOrder = async (req, res) => {
     }
 };
 
-// Get all orders for the logged-in buyer
 export const getMyOrders = async (req, res) => {
     try {
         const orders = await Order.find({ buyer: req.user.userId })
@@ -43,7 +39,6 @@ export const getMyOrders = async (req, res) => {
     }
 };
 
-// Admin: Get all orders
 export const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
@@ -56,7 +51,6 @@ export const getAllOrders = async (req, res) => {
     }
 };
 
-// Farmer: Get orders for their products
 export const getFarmerOrders = async (req, res) => {
     try {
         const orders = await Order.find()
@@ -67,7 +61,6 @@ export const getFarmerOrders = async (req, res) => {
             .populate('buyer', 'firstName lastName email')
             .sort({ orderedAt: -1 });
 
-        // Filter orders where at least one product belongs to this farmer
         const farmerOrders = orders.filter(order =>
             order.products.some(p =>
                 p.product && p.product.farmer && p.product.farmer.toString() === req.user.userId
@@ -80,7 +73,6 @@ export const getFarmerOrders = async (req, res) => {
     }
 };
 
-// Update order status (Admin or Farmer)
 export const updateOrderStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -96,7 +88,6 @@ export const updateOrderStatus = async (req, res) => {
     }
 };
 
-// Delete an order (Admin only)
 export const deleteOrder = async (req, res) => {
     try {
         const { id } = req.params;

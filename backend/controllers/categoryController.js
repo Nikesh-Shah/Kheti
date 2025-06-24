@@ -58,8 +58,8 @@ export const getTopSellingByCategory = async (req, res) => {
     // For each category, get top N selling products (e.g., top 1)
     for (const category of categories) {
       const topProducts = await Product.find({ category: category._id })
-        .sort({ sales: -1 }) // Assumes 'sales' field exists
-        .limit(1); // Change to 3 for top 3, etc.
+        .sort({ sales: -1 }) 
+        .limit(1); 
       result[category.name] = topProducts;
     }
 

@@ -1,18 +1,16 @@
 import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 
-// 1. Get Cart
 export const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
-    if (!cart) return res.status(200).json([]); // Return empty array if no cart
-    res.status(200).json(cart.items); // Return only items array
+    if (!cart) return res.status(200).json([]); 
+    res.status(200).json(cart.items); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// 2. Add to Cart
 export const addToCart = async (req, res) => {
   const { productId, quantity } = req.body;
 
@@ -33,22 +31,19 @@ export const addToCart = async (req, res) => {
     const itemIndex = cart.items.findIndex(i => i.product.toString() === productId);
 
     if (itemIndex > -1) {
-      // Update quantity
       cart.items[itemIndex].quantity += quantity;
     } else {
-      // Add new item
       cart.items.push({ product: productId, quantity });
     }
 
     await cart.save();
     await cart.populate('items.product');
-    res.status(200).json(cart.items); // Return updated items array
+    res.status(200).json(cart.items); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// 3. Update Quantity
 export const updateCartItem = async (req, res) => {
   const { productId, quantity } = req.body;
 
@@ -67,13 +62,12 @@ export const updateCartItem = async (req, res) => {
 
     await cart.save();
     await cart.populate('items.product');
-    res.status(200).json(cart.items); // Return updated items array
-  } catch (error) {
+    res.status(200).json(cart.items);
+    } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// 4. Remove Item
 export const removeFromCart = async (req, res) => {
   const { productId } = req.body;
 
@@ -85,13 +79,12 @@ export const removeFromCart = async (req, res) => {
 
     await cart.save();
     await cart.populate('items.product');
-    res.status(200).json(cart.items); // Return updated items array
+    res.status(200).json(cart.items); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// 5. Clear Cart
 export const clearCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.userId });
@@ -100,7 +93,7 @@ export const clearCart = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    res.status(200).json([]); // Return empty array after clearing
+    res.status(200).json([]); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
