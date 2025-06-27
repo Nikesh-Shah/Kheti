@@ -1,11 +1,11 @@
-"use client"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { loginUser, registerUser } from "../api/api"
 import { LuSprout, LuMail, LuLock, LuUser, LuPhone, LuEye, LuEyeOff } from "react-icons/lu"
 import "../Styles/Auth.css"
+import { useNavigate } from 'react-router-dom'
 
 export default function Auth() {
+  const navigate = useNavigate()
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -48,9 +48,13 @@ export default function Auth() {
         }
 
         const role = res.data.user?.role
-        if (role === "admin") window.location.href = "/admin/dashboard"
-        else if (role === "seller" || role === "farmer") window.location.href = "/farmer/dashboard"
-        else window.location.href = "/"
+        if (role === "admin") {
+          navigate("/admin/dashboard")
+        } else if (role === "seller" || role === "farmer") {
+          navigate("/farmer/dashboard")
+        } else {
+          navigate("/")
+        }
       } else {
         if (form.password !== form.confirmPassword) {
           setError("Passwords do not match")
@@ -87,7 +91,7 @@ export default function Auth() {
     localStorage.removeItem('user')
     sessionStorage.removeItem('token')
     sessionStorage.removeItem('user')
-    window.location.href = '/auth'
+    navigate('/auth')
   }
 
   return (

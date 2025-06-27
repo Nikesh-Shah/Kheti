@@ -1,4 +1,3 @@
-"use client"
 
 import { useEffect, useState } from "react"
 import {
@@ -31,7 +30,6 @@ const categoryIcons = {
   Pest: <LuBug className="category-icon" />,
 }
 
-// Move API_BASE_URL outside component for better performance
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000'; 
 
 export default function Product() {
@@ -42,17 +40,15 @@ export default function Product() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [addedToCartItems, setAddedToCartItems] = useState(new Set())
-  const [imageErrors, setImageErrors] = useState(new Set()) // Track images with errors
+  const [imageErrors, setImageErrors] = useState(new Set()) 
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        // Use res.data for array response, fallback to res.data.products for object response
         const res = await getProducts()
         const fetchedProducts = res.data.products || res.data || []
         setProducts(fetchedProducts)
         
-        // Debug log the first few products
         console.log("Fetched products:", fetchedProducts.slice(0, 2));
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -98,11 +94,10 @@ export default function Product() {
   ]
 
   const handleAddToCart = (e, productId) => {
-    e.preventDefault() // Prevent navigation to product detail
-    e.stopPropagation() // Stop event bubbling
-    addItemToCart(productId, 1) // Add 1 quantity of the product
+    e.preventDefault() 
+    e.stopPropagation()
+    addItemToCart(productId, 1) 
     
-    // Show "Added!" message temporarily
     setAddedToCartItems(prev => new Set(prev).add(productId))
     setTimeout(() => {
       setAddedToCartItems(prev => {
@@ -120,22 +115,17 @@ export default function Product() {
     
     if (!product) return "/placeholder.svg";
     
-    // For mainImage
     if (product.mainImage) {
-      // If already a full URL, use as is
       if (product.mainImage.startsWith("http")) return product.mainImage;
       
-      // Handle relative paths by adding API base URL
       if (product.mainImage.startsWith("uploads/")) {
         return `${API_BASE_URL}/${product.mainImage}`;
       }
       
-      // For paths with leading slash
       if (product.mainImage.startsWith("/uploads/")) {
         return `${API_BASE_URL}${product.mainImage}`;
       }
       
-      // For just the filename
       return `${API_BASE_URL}/uploads/${product.mainImage}`;
     }
     
@@ -152,17 +142,13 @@ export default function Product() {
     return "/placeholder.svg";
   }
 
-  // Handle image errors better
   const handleImageError = (productId, e) => {
     console.error(`Failed to load image for product ${productId}`);
     
-    // Track this product as having image errors
     setImageErrors(prev => new Set(prev).add(productId));
     
-    // Prevent further error loops
     e.target.onerror = null;
     
-    // Set placeholder
     e.target.src = "/placeholder.svg";
   }
 
@@ -197,7 +183,6 @@ export default function Product() {
   return (
     <section className="product-section">
       <div className="product-container">
-        {/* Header */}
         <div className="product-header">
           <h2 className="product-title">All Agricultural Products</h2>
           <p className="product-description">
@@ -205,7 +190,6 @@ export default function Product() {
           </p>
         </div>
 
-        {/* Filters */}
         <div className="product-filters">
           <div className="search-container">
             <LuSearch className="search-icon" />
@@ -234,14 +218,12 @@ export default function Product() {
           </div>
         </div>
 
-        {/* Results Count */}
         <div className="results-info">
           <span className="results-count">
             Showing {filteredProducts.length} of {products.length} products
           </span>
         </div>
 
-        {/* Product Grid */}
         <div className="product-grid">
           {filteredProducts.map((product) => {
             const name = product.title || product.name || ""
@@ -309,7 +291,6 @@ export default function Product() {
           })}
         </div>
 
-        {/* No Results */}
         {filteredProducts.length === 0 && products.length > 0 && (
           <div className="no-results">
             <LuSearch className="no-results-icon" />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyOrders } from "../api/api";
-import Navbar from "./Navbar"; // <-- Import Navbar
+import Navbar from "./Navbar"; 
 import "../Styles/Order.css";
 
 export default function Order() {

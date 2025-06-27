@@ -117,14 +117,12 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* User Menu */}
         {isLoggedIn && (
           <div className="navbar-user" ref={dropdownRef}>
             <button className="user-button" onClick={toggleDropdown}>
               <LuUser className="user-icon" />
             </button>
 
-            {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="dropdown-menu">
                 <div className="dropdown-arrow"></div>
@@ -151,7 +149,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link active">
@@ -177,7 +174,6 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          {/* Show Login/Register for guests in mobile menu */}
           {!isLoggedIn && (
             <>
               <Link to="/auth" className="mobile-nav-link">

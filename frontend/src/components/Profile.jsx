@@ -13,7 +13,6 @@ export default function Profile() {
   const [success, setSuccess] = useState("")
   const [error, setError] = useState("")
 
-  // Load user data from localStorage on mount
   useEffect(() => {
     const userStr = localStorage.getItem("user")
     if (userStr) {
@@ -39,7 +38,6 @@ export default function Profile() {
     setError("")
     setSuccess("")
     try {
-      // Only send updatable fields
       const updateData = {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -48,7 +46,6 @@ export default function Profile() {
       }
       const res = await updateUser(form.id, updateData)
       setSuccess("Profile updated successfully!")
-      // Update localStorage
       const updatedUser = { ...JSON.parse(localStorage.getItem("user")), ...updateData }
       localStorage.setItem("user", JSON.stringify(updatedUser))
     } catch (err) {

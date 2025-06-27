@@ -1,4 +1,3 @@
-"use client"
 
 import { LuStar, LuQuote, LuCheck } from "react-icons/lu"
 
