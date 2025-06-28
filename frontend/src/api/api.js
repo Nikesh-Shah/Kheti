@@ -28,14 +28,9 @@ export const getProductById = (id) => api.get(`/products/${id}`);
 export const getProductsByCategory = (category) => api.get(`/products/category/${category}`);
 export const addProduct = (data) => api.post('/products', data);
 export const updateProduct = (id, data) => api.put(`/products/${id}`, data);
-export const deleteProduct = async (id) => {
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-  return await api.delete(`/products/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-};
+export const deleteProduct =  (id) =>  api.delete(`/products/${id}`);
+// export const deleteProduct = (id) => api.delete(`/products/${id}`);
+
 export const getFarmerProducts = () => api.get('/products/farmer');
 
 export const placeOrder = (data) => api.post('/orders', data);

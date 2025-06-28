@@ -35,7 +35,7 @@ export default function ManageProductAdmin() {
     const checkAuth = () => {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (!token) {
-        navigate('/login', { state: { message: 'Please log in to access admin features' } });
+        navigate('/auth', { state: { message: 'Please log in to access admin features' } });
         return false;
       }
       
@@ -73,7 +73,7 @@ export default function ManageProductAdmin() {
       if (err.response?.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
-        navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
+        navigate('/auth', { state: { message: 'Session expired. Please log in again.' } });
       } else {
         setError("Failed to fetch products: " + (err.response?.data?.message || err.message))
       }
@@ -88,12 +88,6 @@ export default function ManageProductAdmin() {
     setSuccess("")
     
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      if (!token) {
-        setError("Authentication required. Please log in again.");
-        return;
-      }
-      
       await deleteProduct(id);
       setSuccess("Product deleted successfully!")
       fetchProducts()
@@ -103,11 +97,11 @@ export default function ManageProductAdmin() {
       if (err.response?.status === 401) {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
-        navigate('/login', { state: { message: 'Session expired. Please log in again.' } });
+        navigate('/auth', { state: { message: 'Session expired. Please log in again.' } });
       } else if (err.response?.status === 403) {
         setError("Access denied. You don't have permission to delete this product.");
       } else {
-        setError("Failed to delete product: " + (err.response?.data?.message || err.message))
+        setError("Failed to delete product: " + (err.response?.data?.error || err.response?.data?.message || err.message))
       }
     }
   }
@@ -117,12 +111,12 @@ export default function ManageProductAdmin() {
     if (!token) {
       setError("Authentication required. Please log in again.");
       setTimeout(() => {
-        navigate('/login', { state: { message: 'Please log in to edit products' } });
+        navigate('/auth', { state: { message: 'Please log in to edit products' } });
       }, 1000);
       return;
     }
     
-    navigate(`/admin/edit-product/${productId}`);
+    navigate(`/admin/products/edit/${productId}`);
   }
 
   function handleView(productId) {
@@ -399,7 +393,7 @@ export default function ManageProductAdmin() {
                 </tbody>
               </table>
 
-\              <div className="products-grid">
+              <div className="products-grid">
                 {currentProducts.map((product) => (
                   <div className="product-card" key={product._id}>
                     <div className="product-card-image">

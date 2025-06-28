@@ -3,7 +3,6 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import User from './models/users.js';
 import http from 'http';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
@@ -12,6 +11,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
