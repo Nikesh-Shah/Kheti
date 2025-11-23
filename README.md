@@ -63,7 +63,7 @@ Kheti is a full-stack MERN (MongoDB, Express.js, React, Node.js) web application
 
 ## 🚀 Getting Started
 
-### 1. Clone the repo
+### 1. Clone 
 
 ```bash
 git clone https://github.com/Nikesh-Shah/kheti-app.git
